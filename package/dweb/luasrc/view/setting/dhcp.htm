@@ -1,0 +1,53 @@
+<%include("base/header_setting")%>
+
+
+
+		<div class="header">
+			<div class="title">
+				DHCP Setting
+			</div>
+			<div class="description">
+				On this page you can configure the DHCP Settings.
+			</div>
+		</div>
+
+<form action="<%=luci.dispatcher.build_url("api", "common")%>">
+		<div class="wraper">
+
+			<div class="title">
+				Active  DHCP Settings
+			</div>
+			<div class="content">
+				<%include("include/dhcp")%>
+			</div>
+			<% include ("base/action")%>
+			<input type="hidden" name="commit" value="network">
+			<input type="hidden" name="page" value="dhcp">
+			<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+
+		</div>
+</form>
+			<div class="wraper">
+				<div class="title">
+					Static DHCP Settings
+				</div>
+				<div class="content">
+					<%include("include/static_dhcp")%>
+				</div>
+			</div>
+		<div class="wraper">
+			<div class="title">Active DHCP Leases</div>
+			<div class="content">
+				<%include("include/active_dhcp_lease")%>
+			</div>
+		</div>
+		<div class="wraper">
+			<div class="title">Static DHCP Leases</div>
+			<div class="content">
+				<%include("include/static_dhcp_lease")%>
+			</div>
+		</div>
+
+
+
+<%include("base/footer_setting")%>

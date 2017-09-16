@@ -1,0 +1,18 @@
+<%
+local ComFun = require "luci.handle.common.function"
+local w = ComFun.Split(REQUEST_URI, "/")
+%>
+<script type="text/javascript">
+	function navChange(value){
+		location.href = "<%=controller%>/web/" + value
+	}
+</script>
+<div class="row" style="background-color: #3966AE;font-size: 1.2em;color: #ffffff; margin: 0 0 13px 0;">
+	<div class="span12">
+		<div onclick="navChange('status')" style="display: inline-block; padding:7px 10px; cursor: pointer;font-weight: bold; <% if w[5] == "status" then%> color: #8FDFFF"; <%end%>" ><span>Status</span></div>
+		<div onclick="navChange('network')" style="display: inline-block; padding:7px 10px; cursor: pointer;font-weight: bold; <% if w[5] == "network" then%> color: #8FDFFF"; <%end%> " ><span>Network Setup</span></div>
+		<div onclick="navChange('advanced')" style="display: inline-block; padding:7px 10px; cursor: pointer;font-weight: bold; <% if w[5] == "advanced" then%> color: #8FDFFF"; <%end%>"><span>Advanced Settiings</span></div>
+		<div onclick="navChange('maintenace')" style="display: inline-block; padding:7px 10px; cursor: pointer;font-weight: bold; <% if w[5] == "maintenace" then%> color: #8FDFFF"; <%end%>"><span >Maintenace</span></div>
+		<div  onclick="navChange('quick_start')" style=" margin-left: 400px; display: inline-block; padding:7px 10px; cursor: pointer;font-weight: bold;"><span >Home</span></div>
+	</div>
+</div>

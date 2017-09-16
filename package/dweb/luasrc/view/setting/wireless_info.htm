@@ -1,0 +1,89 @@
+<%include("base/header_setting")%>
+
+<%
+local LuciToolStatus = require "luci.tools.status"
+
+local Model = require "luci.handle.util.model"
+local iface = Model.getConfigByName("wireless", "default_mt7628")
+local dev =Model.getConfigByName("wireless", "mt7628")
+local LuciSys = require "luci.sys"
+local InterfaceHandle = require "luci.handle.util.interface"
+assoclist = {}
+local arpcache = { }
+LuciSys.net.arptable(function(e) arpcache[e["HW address"]:upper()] = e["IP address"] end)
+%>
+
+<div class="header">
+	<div class="title">
+		Wireless Status
+	</div>
+	<div class="description">
+		This page shows the current wireless status.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">Wireless Basic Information</div>
+	<div class="content">
+		<table class="table-form">
+			<tr>
+				<th>mode</th>
+				<td>ap</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>ssid</th>
+				<td><%=iface.options.ssid%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>bssid</th>
+				<td><%=(InterfaceHandle.getMac("ra0"))%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Channel</th>
+				<td><%=dev.options.channel%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>bitrate</th>
+				<td>300 Mbit/s</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">Wireless Associated Stations</div>
+	<div class="content">
+		<table class="table">
+			<tr>
+				<th>SSID</th>
+				<th>MAC-Address</th>
+				<th>IPv4-Address</th>
+				<th>Signal</th>
+				<th>Noise</th>
+				<th>RX Rate</th>
+				<th>TX Rate</th>
+			</tr>
+			<% for i, v in ipairs(assoclist) do%>
+			<tr>
+				<td><%=rw.ssid%></td>
+				<td><%=v.bssid%></td>
+				<td><% if arpcache[v.bssid] then%><%=arpcache[v.bssid]%><%end%></td>
+				<td><%=v.signal%> dBm</td>
+				<td><%=v.noise%> dBm</td>
+				<td><%=v.rx_rate%> MBit/s</td>
+				<td><%=v.tx_rate%> MBit/s</td>
+			</tr>
+			<%end%>
+		</table>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

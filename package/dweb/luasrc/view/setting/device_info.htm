@@ -1,0 +1,139 @@
+
+<%include("base/header_setting")%>
+<%
+local LuciSys = require "luci.sys"
+local interface = require "luci.handle.util.interface"
+local lan = interface.ubusLanStatus()
+local wan = interface.ubusWanStatus()
+local LuciUci = require "luci.model.uci"
+local c = LuciUci.cursor()
+local op = c:get("network", "op", "mode")
+local lanDhcpIgnore = c:get("dhcp", "lan", "ignore")
+
+%>
+<div class="header">
+	<div class="title">ADSL Router Status</div>
+	<div class="description">
+		This page shows the current status and some basic settings of the device.
+	</div>
+</div>
+
+<!-- system -->
+<div class="wraper">
+	<div class="title">System</div>
+	<div class="content">
+		<table class="table-form">
+			<tr>
+				<th>Product Name</th>
+				<td>300M Wireless-N ADSL2/2+ Modem Router</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Date/Time</th>
+				<td><%=os.date("%a %b %d %X %Y")%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Firmware Version</th>
+				<td>mtk-openwrt-dcomtek-v0.00.001</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">Lan Configuration</div>
+	<div class="content">
+		<table class="table-form">
+			<tr>
+				<th>Ip Address</th>
+				<td><%=lan["ipv4"]["address"]%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Subnet Mask</th>
+				<td><%=lan["ipv4"]["mask"]%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>DHCP Server</th>
+				<td><% if lanDhcpIgnore == "1" then%>Disable<%else%>Enable<%end%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<th>MAC Address</th>
+			<td><%=interface.getMac("br-lan")%></td>
+		</table>
+	</div>
+</div>
+
+<% if op == "gateway" or op == "wisp" or op == "client_wisp" then %>
+
+<div class="wraper">
+	<div class="title">Wan Configuration</div>
+	<div class="content">
+		<table class="table-form">
+			<tr>
+				<th>Ip Address</th>
+				<td><%=wan["ipv4"]["address"]%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Subnet Mask</th>
+				<td><%=wan["ipv4"]["mask"]%></td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Dns</th>
+				<td><% for i, v in ipairs(wan["dns"]) do%>
+						<%=v%>
+						<%end%>
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Protocal</th>
+				<td>
+					<%if wan["proto"] == 'static' then%>
+					Static
+					<%elseif wan["proto"] == "dhcp" then%>
+					DHCP Client
+					<%elseif wan["proto"] == "pppoe" then%>
+					PPPOE
+					<%end%>
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<th>MAC Address</th>
+			<td><%=interface.getMac(wan["device"])%></td>
+		</table>
+	</div>
+</div>
+<%end%>
+
+<% if lanDhcpIgnore ~= "1" then%>
+<div class="wraper">
+	<div class="title">Active DHCP Leases</div>
+	<div class="content">
+		<%include("include/active_dhcp_lease")%>
+	</div>
+</div>
+<!--
+<div class="wraper">
+	<div class="title">Active DHCPv6 Leases</div>
+	<div class="content">
+		<%include("include/active_dhcpv6_lease")%>
+	</div>
+</div>
+-->
+<%end%>
+
+<%include("base/footer_setting")%>

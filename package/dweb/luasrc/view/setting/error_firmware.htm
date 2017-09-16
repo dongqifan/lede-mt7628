@@ -1,0 +1,31 @@
+<%include("base/header_setting")%>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("input[name='cancel']").on("click", function(){
+			window.location.href = "<%=controller%>/web/maintenace/update/firmware"
+		})
+	})
+</script>
+
+<div class="header">
+	<div class="title">
+		Upgrade Firmware
+	</div>
+	<div class="description">
+		This page allows you upgrade the Router firmware to new version. Please note, do not power off the device during the upload because it may crash the system.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Firmware
+	</div>
+	<div class="content">
+		The uploaded image file does not contain a supported format. Make sure that you choose the generic image format for your platform.
+	</div>
+	<input type="button" name="cancel" value="Cancel">
+
+</div>	
+
+<%include("base/footer_setting")%>

@@ -1,0 +1,173 @@
+
+<%
+local model = require "luci.handle.util.model"
+local iface = model.getConfigByName("wireless", "default_mt7628")
+local ifPrefix = "model," .. iface.config .. "," .. iface.name
+%>
+
+<script>
+// 初始化以及绑定相关事件
+  function wifiControl(){
+    var encryption = $('select[name="encryption"]').val();
+    if(encryption == "none"){
+       $("#key_slot").hide();
+       $("#key1").hide();
+       $("#key2").hide();
+       $("#key3").hide();
+       $("#key4").hide();
+       $("#cipher").hide();
+       $("#rekeyinteval").hide();
+       $("#key").hide();
+    }else if(encryption == "wep-open" || encryption == "wep-shared"){
+       $("#key_slot").show();
+       $("#key1").show();
+       $("#key2").show();
+       $("#key3").show();
+       $("#key4").show();
+       $("#cipher").hide();
+       $("#rekeyinteval").hide();
+       $("#key").hide();
+    }else if(encryption.search("psk") != -1){ //psk psk2 psk-mixd
+       $("#key_slot").hide();
+       $("#key1").hide();
+       $("#key2").hide();
+       $("#key3").hide();
+       $("#key4").hide();
+       $("#cipher").show();
+       $("#rekeyinteval").show();
+       $("#key").show();
+    }
+  }
+  function wifiInit(){
+    var encryption = "<%=iface.options.encryption%>";
+    if(encryption == "wep-open" || encryption == "wep-shared"){
+      $('select[name="key_slot"]').val("<%=iface.options.key%>");
+      $('select[name="encryption"]').val("<%=iface.options.encryption%>");
+    }else if(encryption.search("psk-mixd") != -1){
+      $('select[name="encryption"]').val("psk-mixd");
+    }else if(encryption.search("psk2") != -1){
+      $('select[name="encryption"]').val("psk2");
+    }else if(encryption.search("psk") != -1){
+      $('select[name="encryption"]').val("psk");
+    }
+    if(encryption.search("tkip+ccmp") != -1){
+      $('select[name="cipher"]').val("tkip+ccmp");
+    }else if(encryption.search("ccmp") != -1){
+      $('select[name="cipher"]').val("ccmp");
+    }else if(encryption.search("tkip") != -1){
+      $('select[name="cipher"]').val("tkip");
+    }
+  }
+  $(document).ready(function(){
+    $('select[name="encryption"]').on("change", function(){
+      wifiControl();
+    })
+    wifiInit();
+    wifiControl();
+  })
+  //end
+</script>
+  <div  id = "ssid">
+    <table class="table-form">
+      <tr>
+        <th>Wireless network name:</th>
+        <td><input type="text" name="<%=ifPrefix%>,ssid" value="<%=iface.options.ssid%>" data-rule="required;length(1~32)"></td>
+      </tr>
+    </table>
+  </div>
+  <div  id = "encryption">
+    <table class="table-form">
+      <tr>
+        <th>Wireless network name:</th>
+        <td>
+          <select  name="encryption">
+            <option value="none">No Encryption</option>
+            <option value="wep-open">WEP Open System</option>
+            <option value="wep-shared">WEP Shared System</option>
+            <option value="psk">WPA-PSK</option>
+            <option value="psk2">WPA-PSK2</option>
+            <option value="psk-mixed">WPA2-Mixed</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- wep -->
+  <div class="hidden" id = "key_slot">
+    <table class="table-form">
+      <tr>
+        <th>Used Key Slot:</th>
+        <td>
+          <select  name="key_slot">
+            <option value="1">key #1</option>
+            <option value="2">key #2</option>
+            <option value="3">key #3</option>
+            <option value="4">key #4</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "key1">
+    <table class="table-form">
+      <tr>
+        <th>Key #1:</th>
+        <td> <input type="password" value="<%=iface.options.key1%>" name = "key1" data-rule="wepkey"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "key2">
+    <table class="table-form">
+      <tr>
+        <th>Key #2:</th>
+        <td><input type="password" value="<%=iface.options.key2%>" name = "key2" data-rule="wepkey"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "key3">
+    <table class="table-form">
+      <tr>
+        <th>Key #3:</th>
+        <td><input type="password" value="<%=iface.options.key3%>" name = "key3" data-rule="wepkey"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "key4">
+    <table class="table-form">
+      <tr>
+        <th>Key #4:</th>
+        <td><input type="password" value="<%=iface.options.key4%>" name = "key4" data-rule="wepkey"></td>
+      </tr>
+    </table>
+  </div>
+  <!--wep end-->
+  <div class="hidden" id = "cipher">
+    <table class="table-form">
+      <tr>
+        <th>Cipher:</th>
+        <td>
+          <select  name="cipher">
+            <option value="tkip">TKIP</option>
+            <option value="ccmp">CCMP(AES)</option>
+            <option value="tkip+ccmp">TKIP and CCMP(AES)</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "rekeyinteval">
+    <table class="table-form">
+      <tr>
+        <th>Key Renewal Interval(seconds):</th>
+        <td><input type="text" name="<%=ifPrefix%>,rekeyinteval" value="<%=iface.options.rekeyinteval%>" data-rule="range(0~4194303)"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="hidden" id = "key">
+    <table class="table-form">
+      <tr>
+        <th>Key:</th>
+        <td><input type="password" name="key" value="<%=iface.options.key%>" data-rule="wpakey"></td>
+      </tr>
+    </table>
+  </div>

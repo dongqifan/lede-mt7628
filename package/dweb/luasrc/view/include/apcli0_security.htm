@@ -1,0 +1,250 @@
+
+<%
+local model = require "luci.handle.util.model"
+local iface = model.getConfigByName("wireless", "default_mt7628")
+local ifPrefix ="model," .. iface.config .. "," .. iface.name
+local dev = model.getConfigByName("wireless", "mt7628")
+local devPrefix ="model," .. dev.config .. "," .. dev.name
+%>
+
+<script>
+// 初始化以及绑定相关事件
+
+
+  function encrypTypeControl(){
+    var encrypType = $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val()
+    if(encrypType == "WEP"){
+      $("#ApCliKey1Str").show()
+      $("#ApCliWPAPSK").hide()
+    }else if(encrypType == "NONE"){
+      $("#ApCliKey1Str").hide()
+      $("#ApCliWPAPSK").hide()
+    }else if(encrypType == "TKIP" || encrypType == "AES"){
+      $("#ApCliKey1Str").hide()
+      $("#ApCliWPAPSK").show()
+    }
+  }
+
+  function authModeControl(){
+    var authMode = $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val()
+    if(authMode == "OPEN"){
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").empty();
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").append("<option value='NONE'>NONE</option>");
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").append("<option value='WEP'>WEP</option>");
+    }else if(authMode == "SHARED"){
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").empty();
+      $("select[name='ApCliEncrypType']").append("<option value='WEP'>WEP</option>");
+    }else if(authMode == "WPAPSK" || authMode == "WPA2PSK"){
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").empty();
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").append("<option value='TKIP'>TKIP</option>");
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").append("<option value='AES'>AES</option>");
+    }
+  }
+  function authModeInit(authMode){
+    $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val(authMode);
+    authModeControl();
+  }
+  function encrypTypeInit(encrypType){
+    $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val(encrypType);
+    encrypTypeControl()
+  }
+  $(document).ready(function(){
+    $('select[name="<%=ifPrefix%>,ApCliAuthMode"]').on("change", function(){
+      authModeControl($("select[name='<%=ifPrefix%>,ApCliAuthMode']").val());
+      encrypTypeControl($("select[name='<%=ifPrefix%>,ApCliEncrypType']").val())
+    })
+    $('select[name="<%=ifPrefix%>,ApCliEncrypType"]').on("change", function(){
+      encrypTypeControl($("select[name='<%=ifPrefix%>,ApCliEncrypType']").val())
+    })
+    authModeInit("<%=iface.options.ApCliAuthMode%>");
+    encrypTypeInit("<%=iface.options.ApCliEncrypType%>")
+    $("select[name='<%=devPrefix%>,channel']").val("<%=dev.options.channel%>")
+    $("input[name='site_survey']").on("click", function(){
+      site_survey()
+    })
+  })
+  //end
+</script>
+  <div  id = "ApCliSsid">
+    <table class="table-form">
+      <tr>
+        <th>Remote Ap SSID:</th>
+        <td><input type="text" name="<%=ifPrefix%>,ApCliSsid" value="<%=iface.options.ApCliSsid%>" ></td>
+      </tr>
+    </table>
+  </div>
+  <div  id = "ApCliBssid">
+    <table class="table-form">
+      <tr>
+        <th>MAC Address:</th>
+        <td><input type="text" name="<%=ifPrefix%>,ApCliBssid" value="<%=iface.options.ApCliBssid%>" data-rule="macaddr"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="channel">
+    <table class="table-form">
+      <tr>
+        <th>Channel:</th>
+        <td>
+          <select name="<%=devPrefix%>,channel">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    </div>
+  <div  id = "ApCliAuthMode">
+    <table class="table-form">
+      <tr>
+        <th>Security Mode:</th>
+        <td>
+          <select  name="<%=ifPrefix%>,ApCliAuthMode">
+            <option value="OPEN">OPEN</option>
+            <option value="SHARED">SHARED</option>
+            <option value="WPAPSK">WPAPSK</option>
+            <option value="WPA2PSK">WPA2PSK</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="ApCliEncrypType">
+    <table class="table-form">
+      <tr>
+        <th>Encryption Type:</th>
+        <td>
+          <select name="<%=ifPrefix%>,ApCliEncrypType">
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- wep -->
+  <!--
+  <div class="hidden" id = "ApCliDefaultKeyID">
+    <table class="table-form">
+      <tr>
+        <th>WEP Default Key:</th>
+        <td>
+          <select  name="ApCliDefaultKeyID">
+            <option value="1">key 1</option>
+            <option value="2">key 2</option>
+            <option value="3">key 3</option>
+            <option value="4">key 4</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  -->
+  <div class="hidden" id = "ApCliKey1Str">
+    <table class="table-form">
+      <tr>
+        <th>Key:</th>
+        <td> <input type="password" value="<%=iface.options.ApCliKey1Str%>" name = "<%=ifPrefix%>,ApCliKey1Str" data-rule="wepkey"></td>
+      </tr>
+    </table>
+  </div>
+  <input type="hidden" name="<%=ifPrefix%>,ApCliEnable" value="1">
+  <div class="hidden" id = "ApCliWPAPSK">
+    <table class="table-form">
+      <tr>
+        <th>Passphrace:</th>
+        <td><input type="password" name="<%=ifPrefix%>,ApCliWPAPSK" value="<%=iface.options.ApCliWPAPSK%>" data-rule="wpakey"></td>
+      </tr>
+    </table>
+  </div>
+
+
+
+<script type="text/javascript">
+  s = null;
+  function get_site_survey() {
+    var html_text = '<tr><th>CH</th><th>SSID</th><th>BSSID</th><th>Security</th><th>Signal(%)</th><th>W-Mode</th><th>ExtCh</th><th>NT</th><th>WPS</th><th>Select</th></tr>';
+    $.ajax({
+      url: "<%=luci.dispatcher.build_url('api', 'util', 'get_site_survey')%>",
+      success: function(res){
+        s = res;
+        for(var i = 0; i < s.length; i++){
+            html_text = html_text + '<tr><td>'+ s[i].ch +'</td><td>'+ s[i].ssid +'</td><td>'+ s[i].bssid +'</td><td>'+ s[i].security +'</td><td>'+ s[i].signal +'</td><td>'+ s[i].mode +'</td><td>'+ s[i].extch +'</td><td>'+ s[i].nt +'</td><td>'+ s[i].wps +'</td><td><input type="radio" name="site_survey" onclick="change_survey(' + i + ')"/></td></tr>';
+        }
+        $("#site_survey_result").html(html_text);
+      }
+    })
+    return
+  }
+    function site_survey() {
+      $.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "site_survey")%>',
+        success: function(res){
+          //alert(res.code)
+          return;
+        },
+        error: function(){
+          alert("2222");
+        }
+      })
+      window.setTimeout(get_site_survey, 4000);
+    }
+
+    String.prototype.trim = function() {
+    return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+  }
+
+
+  function change_survey(index){
+    $("input[name='<%=ifPrefix%>,ApCliSsid']").val(s[index].ssid.trim())
+    $("input[name='<%=ifPrefix%>,ApCliBssid']").val(s[index].bssid.trim())
+    $("select[name='<%=devPrefix%>,channel']").val(s[index].ch.trim())
+    if(s[index].security.search("NONE") != -1){ //NONE
+      $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val("OPEN")
+      authModeControl()
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("NONE")
+      encrypTypeControl()
+    }else if (s[index].security.search("WEP") != -1) {
+      $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val("OPEN")
+      authModeControl()
+      $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("WEP")
+      encrypTypeControl()
+    }else if(s[index].security.search("WPA2") != -1){
+      $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val("WPA2PSK")
+      authModeControl()
+      if(s[index].security.search("AES") != -1){
+        $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("AES")
+        encrypTypeControl()
+      }else if(s[index].security.search("TKIP") != -1){
+        $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("TKIP")
+        encrypTypeControl()
+      }
+    }else if(s[index].security.search("WPA") != -1){
+      $("select[name='<%=ifPrefix%>,ApCliAuthMode']").val("WPAPSK")
+      authModeControl()
+      if(s[index].security.search("AES") != -1){
+        $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("AES")
+        encrypTypeControl()
+      }else if(s[index].security.search("TKIP") != -1){
+        $("select[name='<%=ifPrefix%>,ApCliEncrypType']").val("TKIP")
+        encrypTypeControl()
+      }
+    }
+  }
+</script>
+<div style="margin-bottom: 10px;">
+  <input type="button" value="Site Survey" name = "site_survey" />
+</div>
+<table id="site_survey_result" class = "table">
+</table>

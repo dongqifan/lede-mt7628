@@ -1,0 +1,238 @@
+<% include("base/header_setting")%>
+<%
+local MtkNetworkUtil = require "luci.libmtk.util.MtkNetworkUtil"
+local MtkDHCPUtil = require "luci.libmtk.util.MtkDHCPUtil"
+local rw = MtkNetworkUtil.getNetworkConfigWan6()
+local rl = MtkNetworkUtil.getNetworkConfigLan()
+local rld = MtkDHCPUtil.getLanDHCPv6()
+%>
+
+<script>
+function protocalInit(proto){
+    if(proto == "static"){
+        $("#protocal").html($("#static").html())
+    }else if(proto == "dhcpv6"){
+        $("#protocal").html($("#dhcpv6").html())
+    }else if(proto == "6in4"){
+        $("#protocal").html($("#in4").html())
+    }else if(proto == "6to4"){
+        $("#protocal").html($("#to4").html())
+    }else if(proto == "6rd"){
+        $("#protocal").html($("#rd").html())
+    }
+}
+
+function dhcpv6Init(){
+    $("select[name='ra']").val("<%=rld.ra%>")
+    $("select[name='dhcpv6']").val("<%=rld.dhcpv6%>")
+    $("select[name='ra_management']").val("<%=rld.ra_management%>")
+}
+$(document).ready(function(){
+    
+
+    $("select[name='proto']").on("change", function(){
+        protocalInit(this.value)
+    })
+    $("select[name='proto']").val("<%=rw.configInfo.proto%>")
+    protocalInit("<%=rw.configInfo.proto%>")
+    dhcpv6Init()
+    $("input[name='submit']").on("click", function(){
+      $.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "mtknetwork", "ipv6")%>',
+        type: 'post',
+        data: getFormJson("#ipv6"),
+        dataType: 'json',
+        success: function(res){  
+          if(res.code == 0){
+            $("#success_modal").modal("show")
+          }else{
+            $("#content").html(res.message)
+            $("#error_modal").modal("show")
+          }  
+        },
+        error: function(){
+          $("#content").html("Unknown network error!")
+          $("#error_modal").modal("show")
+        }
+      })
+    })
+})
+</script>
+
+
+
+
+
+<div class="header">
+    <div class="title">
+        Ipv6 Settings
+    </div>
+    <div class="description">
+        On this page, you can configure the ipv6 settings.
+    </div>
+</div>
+
+<script type="tmpl/html" id="static">
+    <table class="table-form">
+        <tr>
+            <th>Ipv6 address:</th>
+            <td><input type="text" name="ip6addr" value="<%=rw.configInfo.ip6addr%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Ipv6 Gateway:</th>
+            <td><input type="text" name="ip6gw" value="<%=rw.configInfo.ip6gw%>"></td>
+        </tr>
+    </table>
+</script>
+<script type="tmpl/html" id="dhcpv6">
+</script>
+<script id="in4" type="tmpl/html">
+    <table class="table-form">
+        <tr>
+            <th>Local Ipv4 address:</th>
+            <td><input type="text" name="ipaddr" value="<%=rw.configInfo.ipaddr%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Remote Ipv4 address:</th>
+            <td><input type="text" name="peeraddr" value="<%=rw.configInfo.peeraddr%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Local ipv6 address:</th>
+            <td><input type="text" name="ip6addr" value="<%=rw.configInfo.ipaddr%>"></td>
+        </tr>
+    </table>
+</script>
+<script id="to4" type="tmpl/html">
+    <table class="table-form">
+        <tr>
+            <th>Local Ipv4 address:</th>
+            <td><input type="text" name="ipaddr" value="<%=rw.configInfo.ipaddr%>"></td>
+        </tr>
+    </table>
+</script>
+<script id="rd" type="tmpl/html">
+    <table class="table-form">
+        <tr>
+            <th>Local Ipv4 address:</th>
+            <td><input type="text" name="ipaddr" value="<%=rw.configInfo.ipaddr%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Remote Ipv4 address:</th>
+            <td><input type="text" name="peeraddr" value="<%=rw.configInfo.peeraddr%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Ipv6 prefix:</th>
+            <td><input type="text" name="ip6prefix" value="<%=rw.configInfo.ip6prefix%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Ipv6 prefix length:</th>
+            <td><input type="text" name="ip6prefixlen" value="<%=rw.configInfo.ip6prefixlen%>"></td>
+        </tr>
+    </table>
+    <table class="table-form">
+        <tr>
+            <th>Ipv4 prefix length:</th>
+            <td><input type="text" name="ip4prefixlen" value="<%=rw.configInfo.ip4prefixlen%>"></td>
+        </tr>
+    </table>
+</script>
+
+<form id="ipv6">
+<div class="wraper">
+    <div class="title">
+        Wan ipv6 settings
+    </div>
+    <div class="content">
+        <table class="table-form">
+            <tr>
+                <th>Protocal:</th>
+                <td>
+                    <select id="" name="proto">
+                        <option value="static">Static</option>
+                        <option value="dhcpv6">DHCPv6 Client</option>
+                        <option value="6in4">Ipv6 in Ipv4</option>
+                        <option value="6to4">6to4</option>
+                        <option value="6rd">6rd</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div id="protocal">
+        </div>
+    </div>
+</div>
+
+
+<div class="wraper">
+    <div class="title">
+        Lan ipv6 setting
+    </div>
+    <div class="content">
+        <table class="table-form">
+            <tr>
+                <th>Ipv6 address:</th>
+                <td><input type="text" name="lan_ip6addr" value="<%=rl.configInfo.ip6addr%>"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="wraper">
+    <div class="title">
+        Ipv6 DHCP Setting
+    </div>
+    <div class="content">
+        <table class="table-form">
+            <tr>
+                <th>Router Advertisement-Service:</th>
+                <td>
+                    <select id="" name="ra">
+                        <option value="disabled">Disabled</option>
+                        <option value="server">Server Mode</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="table-form">
+            <tr>
+                <th>DHCPv6 Service:</th>
+                <td>
+                    <select id="" name="dhcpv6">
+                        <option value="disabled">Disabled</option>
+                        <option value="server">Server Mode</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="table-form">
+            <tr>
+                <th>DHCPv6-Mode:</th>
+                <td>
+                    <select id="" name="ra_management">
+                        <option value="0">stateless</option>
+                        <option value="1">stateless+stateful</option>
+                        <option value="2">stateful-only</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<%include("base/action")%>
+</form>
+<%include("base/footer_setting")%>
+
+

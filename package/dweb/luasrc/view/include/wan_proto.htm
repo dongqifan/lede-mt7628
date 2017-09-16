@@ -1,0 +1,218 @@
+<%
+local model = require "luci.handle.util.model"
+local ComFun = require "luci.handle.common.function"
+local wan = model.getConfigByName("network", "wan")
+local dns = {}
+if wan.options.dns ~= nil then
+	dns = ComFun.Split(wan.options.dns, " ")
+else
+	dns = {"", ""}
+end
+
+%>
+
+<script type="text/javascript">
+		function wanControl(value){
+
+			if(value == "static"){
+				$("#template").html($("#static").html())
+			}else if(value == "dhcp"){
+				$("#template").html($("#dhcp").html())
+			}else if(value == "pppoe"){
+				$("#template").html($("#pppoe").html())
+
+			}else if(value == "pptp" || value == "l2tp"){
+				$("#template").html($("#vpn").html())
+			}
+		}
+
+
+	$(document).ready(function(){
+
+
+		var proto = "<%=wan.options.proto%>"
+		wanControl(proto);
+		$("select[name='model,network,wan,proto']").val(proto)
+		$("select[name='model,network,wan,proto']").on("change", function(){
+			wanControl(this.value)
+		})
+	})
+
+</script>
+
+
+<script type="tmpl/html" id = "static">
+	<div id="ipaddr">
+		<table class="table-form">
+			<tr>
+				<th>IP Address:</th>
+				<td><input type="text" id="ip4addr" name="model,network,wan,ipaddr" value="<%=wan.options.ipaddr%>" data-rule="required;ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="netmask">
+		<table class="table-form">
+			<tr>
+				<th>Subnet Mask:</th>
+				<td><input type="text" name="model,network,wan,netmask" value="<%=wan.options.netmask%>" data-rule="required(#ip4addr:filled); ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="gateway">
+		<table class="table-form">
+			<tr>
+				<th>Gateway:</th>
+				<td><input type="text" name="model,network,wan,gateway" value="<%=wan.options.gateway%>" data-rule="ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="dns1">
+		<table class="table-form">
+			<tr>
+				<th>Primary DNS Server:</th>
+				<td><input type="text" name="dns1" value="<%=dns[1]%>"  data-rule="ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+	<div id="dns2">
+		<table class="table-form">
+			<tr>
+				<th>Secondary DNS Server:</th>
+				<td><input type="text" name="dns2" value="<%=dns[2]%>"  data-rule="ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+</script>
+
+<script type="tmpl/html" id="dhcp">
+	<div id="hostname">
+		<table class="table-form">
+			<tr>
+				<th>HostName:</th>
+				<td><input type="text" name="model,network,wan,hostname" value="<%=wan.options.hostname%>"></td>
+			</tr>
+		</table>
+	</div>
+</script>
+
+<script type="tmpl/html" id="pppoe">
+	<div id="username" >
+		<table class="table-form">
+			<tr>
+				<th>Username:</th>
+				<td><input type="text" name="model,network,wan,username" value="<%=wan.options.username%>"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="password">
+
+		<table class="table-form">
+			<tr>
+				<th>Password</th>
+				<td><input type="password" name="model,network,wan,password" value="<%=wan.options.password%>"></td>
+			</tr>
+		</table>
+
+	</div>
+	<div id="demand">
+	<table class="table-form">
+		<tr>
+			<th>Maximum Idle Time:</th>
+			<td>
+				<input type="text" name="model,network,wan,demand" value="<%=wan.options.demand%>" data-rule="digits">
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+</script>
+
+
+<script type="tmpl/hmtl" id="vpn">
+	<div id="vpn">
+		<table class="table-form">
+			<tr>
+				<th>Server:</th>
+				<td>
+					<input type="text" name="model,network,wan,server" value="<%=wan.options.server%>">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="username" >
+		<table class="table-form">
+			<tr>
+				<th>Username:</th>
+				<td><input type="text" name="model,network,wan,username" value="<%=wan.options.username%>"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="password">
+
+		<table class="table-form">
+			<tr>
+				<th>Password</th>
+				<td><input type="password" name="model,network,wan,password" value="<%=wan.options.password%>"></td>
+			</tr>
+		</table>
+
+	</div>
+		<div id="demand">
+	<table class="table-form">
+		<tr>
+			<th>Maximum Idle Time:</th>
+			<td>
+				<input type="text" name="model,network,wan,demand" value="<%=wan.options.demand%>"  data-rule="digits">
+			</td>
+		</tr>
+	</table>
+</div>
+
+</script>
+
+	<div id="proto">
+		<table class="table-form" >
+			<tr>
+				<th>Wan Connection Type:</th>
+				<td>
+
+					<select name="model,network,wan,proto">
+						<option value="static">Static</option>
+						<option value="dhcp">DHCP Client</option>
+						<option value="pppoe">PPPOE</option>
+						<option value="pptp">PPTP</option>
+						<option value="l2tp">L2TP</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="template">
+
+	</div>
+		<div id="mtu">
+		<table class="table-form">
+			<tr>
+				<th>Override MTU:</th>
+				<td>
+					<input type="text" name="model,network,wan,mtu" placeholder="1500" value="<%=wan.options.mtu%>" data-rule="range(64~9000)">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="macaddr">
+	<table class="table-form">
+		<tr>
+			<th>Override MAC address</th>
+			<td>
+				<input type="text" name="model,network,wan,macaddr" value="<%=wan.options.macaddr%>" data-rule="macaddr">
+			</td>
+		</tr>
+	</table>
+</div>

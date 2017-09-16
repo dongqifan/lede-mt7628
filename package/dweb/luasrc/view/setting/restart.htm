@@ -1,0 +1,47 @@
+<%include("base/header_setting")%>
+<div class="header">
+	<div class="title">
+		Restart/Reset
+	</div>
+	<div class="description">
+		To reset the firmware to its initial state, click "reset" , to restart the Router, click "restart".
+	</div>
+</div>
+
+
+<div class="wraper">
+	<div class="title">
+		Restart
+	</div>
+	<div class="content">
+	<form method="post" action="<%=controller%>/api/system/restart">
+		<div class="restart">
+			<table class="table-form">
+				<tr>
+					<th>Click to Restart:</th>
+					<td>
+						<input type="submit" name="restart" value="Restart">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+	<form method="post" action="<%=controller%>/api/system/restart">
+		<div class="reset">
+			<table class="table-form">
+				<tr>
+					<th>Click to Reset:</th>
+					<td>
+						<input type="submit" name="reset" value="Reset">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+	</div>
+</div>	
+
+
+
+
+<%include("base/footer_setting")%>

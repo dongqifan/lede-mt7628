@@ -1,0 +1,19 @@
+<%
+local MtkFunction = require "luci.libmtk.common.MtkFunction"
+local MtkNetworkUtil= require "luci.libmtk.util.MtkNetworkUtil"
+local w = MtkNetworkUtil.getNetworkConfigWan2()
+local device_suggestions = nixio.fs.glob("/dev/tty[A-Z]*") or nixio.fs.glob("/dev/tts/*")
+
+
+%>
+
+<script>
+	function proto3GInit(){
+		$("select[name='device']").val("<%=w.configInfo.device%>")
+		$("select[name='service']").val("<%=w.configInfo.service%>")
+	}
+
+	$(document).ready(function(){
+		proto3GInit()
+	})
+</script>

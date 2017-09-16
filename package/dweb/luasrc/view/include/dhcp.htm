@@ -1,0 +1,75 @@
+<%
+local ComFun = require "luci.handle.common.function"
+local Model = require 'luci.handle.util.model'
+local Interface = require "luci.handle.util.interface"
+lanIp1, lanIp2, lanIp3, lanIp5 = string.match(Interface.getLanIp(), "(%d+)%.(%d+)%.(%d+)%.(%d+)")
+local w = Model.getConfigByName("dhcp", "lan")
+local dhcpPrefix = "model,dhcp,lan"
+%>
+
+<script type="text/javascript">
+	function dhcpControl(value){
+		if(value == "1"){
+			$("#startReq").hide();
+			$("#endReq").hide();
+			$("#leasetimeMinute").hide();
+		}else if(value == "0"){
+			$("#startReq").show();
+			$("#endReq").show();
+			$("#leasetimeMinute").show();
+		}
+	}
+
+	$(document).ready(function(){
+		dhcpControl("<%=(w.options.ignore or 0)%>");
+	})
+	function dhcpChange(value){
+		dhcpControl(value);
+	}
+</script>
+
+
+<div id="ignore">
+	<table class="table-form">
+		<tr>
+			<th>DHCP</th>
+			<td>
+				<input type="radio" name="<%=dhcpPrefix%>,ignore" value="1" <% if w.options.ignore == "1" then%>checked<%end%>  onclick="dhcpChange(this.value)">Disabled
+				<input type="radio" name="<%=dhcpPrefix%>,ignore" value = "0" <% if w.options.ignore ~= "1" then%>checked<%end%> onclick="dhcpChange(this.value)">Enabled
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="startReq" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>Start IP:</th>
+			<td>
+				<%=lanIp1%>.<%=lanIp2%>.<%=lanIp3%>.<input type="text" name="startReq" value = "<%=w.options.start%>" data-rule="required;range(1~254)">
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="endReq" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>End IP:</th>
+			<td>
+				<%=lanIp1%>.<%=lanIp2%>.<%=lanIp3%>.<input type="text" name="endReq" value = "<%=(w.options.start + w.options.limit - 1)%>" data-rule="required;range(1~254);match(gt,startReq)">
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="leasetimeMinute" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>Lease Time:</th>
+			<td>
+				<input type="text" name="leasetimeMinute" value="<%=(string.sub(w.options.leasetime, 1, #(w.options.leasetime) - 1))%>" data-rules="required;integer(+)"> hours
+			</td>
+		</tr>
+	</table>
+</div>

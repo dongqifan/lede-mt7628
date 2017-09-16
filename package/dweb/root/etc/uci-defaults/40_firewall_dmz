@@ -1,0 +1,6 @@
+#!/bin/sh
+uci set firewall.dmz=redirect
+uci set firewall.dmz.src=wan
+uci set firewall.dmz.target=DNAT
+uci set firewall.dmz.enabled=0
+uci commit

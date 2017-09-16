@@ -1,0 +1,99 @@
+<%include("base/header_setting")%>
+
+
+	<%
+local model = require "luci.handle.util.model"
+local w = model.getConfigByName("network", "wan2")
+local device_suggestions = nixio.fs.glob("/dev/tty[A-Z]*") or nixio.fs.glob("/dev/tts/*")
+%>
+		<script type="text/javascript">
+			function proto3GInit() {
+				$("select[name='config,network,wan2,device']").val("<%=w.options.device%>")
+				$("select[name='config,network,wan2,service']").val("<%=w.options.service%>")
+			}
+			$(document).ready(function() {
+				proto3GInit()
+			})
+		</script>
+		<form id="form" action="<%=luci.dispatcher.build_url("api", "common")%>">
+			<div class="header">
+				<div class="title">
+					3G Setting
+				</div>
+				<div class="description">
+					On this page you can configure the 3G network interfaces.
+				</div>
+			</div>
+
+
+			<div class="wraper">
+				<div class="title">
+					Proto
+				</div>
+				<div class="content">
+					<table class="table-form">
+						<tr>
+							<th>Modem device:</th>
+							<td>
+								<select name="model,network,wan2,device" id="">
+								<% for node in device_suggestions do%>
+								<option value="<%=node%>"><%=node%></option>
+								<%end%>
+							</select>
+							</td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>Service Type:</th>
+							<td>
+								<select name="model,network,wan2,service" id="">
+								<option value="umts">UMTS/GPRS</option>
+								<option value="umts_only">UMTS only</option>
+								<option value="gprs_only">GPRS only</option>
+								<option value="evdo">CDMA/EV-DO</option>
+							</select>
+							</td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>APN:</th>
+							<td><input type="text" name="model,network,wan2,apn" value="<%=w.options.apn%>"></td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>PIN:</th>
+							<td><input type="text" name="model,network,wan2,pincode" , value="<%=w.options.pincode%>"></td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>PAP/CHAP username:</th>
+							<td><input type="text" name="model,network,wan2,username" , value="<%=w.options.username%>"></td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>PAP/CHAP password:</th>
+							<td><input type="text" name="model,network,wan2,password" , value="<%=w.options.password%>"></td>
+						</tr>
+					</table>
+					<table class="table-form">
+						<tr>
+							<th>Dial number:</th>
+							<td><input type="text" name="model,network,wan2,dialnumber" , value="<%=w.options.dialnumber%>"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<% include ("base/action")%>
+				<input type="hidden" name="model,network,wan2,enabled" value="1">
+				<input type="hidden" name="commit" value="network">
+				<input type="hidden" name="page" value="3g">
+				<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+				<input type="hidden" name="function" value="func3g">
+		</form>
+
+		<%include("base/footer_setting")%>

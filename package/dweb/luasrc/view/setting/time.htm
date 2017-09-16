@@ -1,0 +1,129 @@
+<%include("base/header_setting")%>
+
+<%
+local Model= require "luci.handle.util.model"
+local rw = Model.getTimeInfo()
+require("luci.sys.zoneinfo")
+%>
+
+<script type="text/javascript">
+	function initTime(){
+		$("select[name='timezone']").val("<%=rw.timezone%>")
+		$("select[name='enabled']").val("<%=rw.enabled%>")
+	}
+	function ntpControl(){
+		var enabled = $("select[name='enabled']").val()
+		if(enabled == "1"){
+			$("#server1").show()
+			$("#server2").show()
+			$("#server3").show()
+			$("#server4").show()
+		}else{
+			$("#server1").hide()
+			$("#server2").hide()
+			$("#server3").hide()
+			$("#server4").hide()
+		}
+	}
+	$(document).ready(function(){
+		initTime()
+		ntpControl()
+		$("select[name='enabled']").on("change", function(){
+			ntpControl()
+		})
+	})
+</script>
+
+<div class="header">
+	<div class="title">
+		Time Settings
+	</div>
+	<div class="description">
+		On this page, you can configure time settings
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Time
+	</div>
+	<div class="content">
+		<form id="time">
+
+
+		<div class="timezone">
+			<table class="table-form">
+				<tr>
+					<th>Timezone:</th>
+					<td>
+						<select name="timezone">
+							<option value="UTC">UTC</option>
+							<% for i, zone in ipairs(luci.sys.zoneinfo.TZ) do %>
+							<option value="<%=zone[2]%>"><%=zone[1]%></option>
+							<% end %>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="enable">
+			<table class="table-form">
+				<tr>
+					<th>Enable NTP client:</th>
+					<td>
+						<select name="enabled">
+							<option value="0">Disable</option>
+							<option value="1">Enable</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="server1" class="hidden">
+			<table class="table-form">
+				<tr>
+					<th>NTP server candidates #1:</th>
+					<td>
+						<input type="text" name="server1" value="<%=rw.server[1]%>">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="server2" class="hidden">
+			<table class="table-form">
+				<tr>
+					<th>NTP server candidates #2:</th>
+					<td>
+						<input type="text" name="server2" value="<%=rw.server[2]%>">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="server3" class="hidden">
+			<table class="table-form">
+				<tr>
+					<th>NTP server candidates #3:</th>
+					<td>
+						<input type="text" name="server3" value="<%=rw.server[3]%>">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="server4" class="hidden">
+			<table class="table-form">
+				<tr>
+					<th>NTP server candidates #4:</th>
+					<td>
+						<input type="text" name="server4" value="<%=rw.server[4]%>">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<% include ("base/action")%>
+		</form>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

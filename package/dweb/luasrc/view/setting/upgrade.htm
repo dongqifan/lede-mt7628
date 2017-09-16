@@ -1,0 +1,55 @@
+<%include("base/header_setting")%>
+
+<div class="header">
+	<div class="title">
+		Flash Firmware - Verify
+	</div>
+	<div class="description">
+		The flash image was uploaded. Below is the checksum and file size listed, compare them with the original file to ensure data integrity.Click "Upgrade" below to start the flash procedure.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Upgrade
+	</div>
+	<div class="content">
+		<form method="post" action="<%=controller%>/api/system/upgrade">
+			
+		
+		<div class="checksum">
+			<table class="table-form">
+				<tr>
+					<th>Checksum:</th>
+					<td><%=checksum%></td>
+				</tr>
+			</table>
+			<table class="table-form">
+				<tr>
+					<th>Available Size:</th>
+					<td><%=storage%></td>
+				</tr>
+			</table>
+			<table class="table-form">
+				<tr>
+					<th>Image Size:</th>
+					<td><%=size%></td>
+				</tr>
+			</table>
+			<table class="table-form">
+				<tr>
+					<th>Keep Settings:</th>
+					<td>
+						<input type="checkbox" name="keep" checked="checked" value="1"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<input type="submit" name="submit" value="Upgrade">
+</form>
+	</div>
+
+	
+</div>
+
+<%include("base/footer_setting")%>

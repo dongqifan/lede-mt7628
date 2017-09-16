@@ -1,0 +1,176 @@
+Index: mt7628-p4rev-120395/src/embedded/common/cmm_cfg.c
+===================================================================
+--- mt7628-p4rev-120395.orig/src/embedded/common/cmm_cfg.c
++++ mt7628-p4rev-120395/src/embedded/common/cmm_cfg.c
+@@ -1071,6 +1071,10 @@ INT RTMP_COM_IoctlHandle(
+ 			*(ULONG *)pData = pAd->ChannelListNum;
+ 			break;
+ 
++		case CMD_RTPRIV_IOCTL_TXPOWER_GET:
++			*(ULONG *)pData = pAd->CommonCfg.TxPowerPercentage;
++			break;
++			
+ 		case CMD_RTPRIV_IOCTL_CHAN_LIST_GET:
+ 		{
+ 			UINT32 i;
+Index: mt7628-p4rev-120395/src/embedded/common/cmm_info.c
+===================================================================
+--- mt7628-p4rev-120395.orig/src/embedded/common/cmm_info.c
++++ mt7628-p4rev-120395/src/embedded/common/cmm_info.c
+@@ -3274,6 +3274,7 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 	RT_802_11_MAC_TABLE *pMacTab = NULL;
+ 	PRT_802_11_MAC_ENTRY pDst;
+ 	MAC_TABLE_ENTRY *pEntry;
++	HTTRANSMIT_SETTING RxHTPhyMode;
+ 
+ 	/* allocate memory */
+ 	os_alloc_mem(NULL, (UCHAR **)&pMacTab, sizeof(RT_802_11_MAC_TABLE));
+@@ -3296,6 +3297,13 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			pDst->Aid = (UCHAR)pEntry->Aid;
+ 			pDst->Psm = pEntry->PsMode;
+ 
++			pDst->TxPackets = pEntry->TxPackets.QuadPart;
++			pDst->RxPackets = pEntry->RxPackets.QuadPart;
++
++			pDst->InactiveTime = pEntry->NoDataIdleCount * 1000; /* unit: ms */
++			pDst->InactiveTime *= MLME_TASK_EXEC_MULTIPLE;
++			pDst->InactiveTime /= 20;
++
+ #ifdef DOT11_N_SUPPORT
+ 			pDst->MimoPs = pEntry->MmpsMode;
+ #endif /* DOT11_N_SUPPORT */
+@@ -3304,12 +3312,23 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			pDst->AvgRssi0 = pEntry->RssiSample.AvgRssi[0];
+ 			pDst->AvgRssi1 = pEntry->RssiSample.AvgRssi[1];
+ 			pDst->AvgRssi2 = pEntry->RssiSample.AvgRssi[2];
+-
++			pDst->Signal = RTMPAvgRssi(pAd, &pEntry->RssiSample);
++			pDst->Noise = RTMPMaxRssi(pAd, pAd->ApCfg.RssiSample.AvgRssi[1], pAd->ApCfg.RssiSample.AvgRssi[1],
++							pAd->ApCfg.RssiSample.AvgRssi[2]) - RTMPMinSnr(pAd, pAd->ApCfg.RssiSample.AvgSnr[0],
++							pAd->ApCfg.RssiSample.AvgSnr[1]);
++			
+ 			/* the connected time per entry*/
+ 			pDst->ConnectedTime = pEntry->StaConnectTime;
++
++			/* Tx Rate */
+ 			pDst->TxRate.word = pEntry->HTPhyMode.word;
++			getRate(pEntry->HTPhyMode, &pDst->TxBitRate);
+ 
++			/* Rx Rate */
+ 			pDst->LastRxRate = pEntry->LastRxRate;
++			RxHTPhyMode.word = (USHORT)(pEntry->LastRxRate);
++			pDst->RxRate.word = RxHTPhyMode.word;
++			getRate(RxHTPhyMode, &pDst->RxBitRate);
+ 
+ 			pMacTab->Num += 1;
+ 		}
+Index: mt7628-p4rev-120395/src/embedded/include/oid.h
+===================================================================
+--- mt7628-p4rev-120395.orig/src/embedded/include/oid.h
++++ mt7628-p4rev-120395/src/embedded/include/oid.h
+@@ -1118,14 +1118,22 @@ typedef struct _RT_802_11_MAC_ENTRY {
+ 	CHAR AvgRssi0;
+ 	CHAR AvgRssi1;
+ 	CHAR AvgRssi2;
++	CHAR Signal;
++	CHAR Noise;
+ 	UINT32 ConnectedTime;
+ 	MACHTTRANSMIT_SETTING TxRate;
++	MACHTTRANSMIT_SETTING RxRate;
++	ULONG TxBitRate;
++	ULONG RxBitRate;
+ 	UINT32 LastRxRate;
+ #ifdef RTMP_RBUS_SUPPORT
+ 	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
+ 	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
+ /*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
+ /*	SHORT reserved;*/
++	UINT32		TxPackets;
++	UINT32		RxPackets;
++	UINT32		InactiveTime;				/* time since last activity (u32, msecs) */
+ #endif /* RTMP_RBUS_SUPPORT */
+ } RT_802_11_MAC_ENTRY, *PRT_802_11_MAC_ENTRY;
+ 
+Index: mt7628-p4rev-120395/src/embedded/include/rtmp_cmd.h
+===================================================================
+--- mt7628-p4rev-120395.orig/src/embedded/include/rtmp_cmd.h
++++ mt7628-p4rev-120395/src/embedded/include/rtmp_cmd.h
+@@ -286,6 +286,7 @@ typedef enum _CMD_RTPRIV_IOCTL_COMMON {
+ 	CMD_RTPRIV_IOCTL_CHAN_LIST_NUM_GET,
+ 	CMD_RTPRIV_IOCTL_CHAN_LIST_GET,
+ 	CMD_RTPRIV_IOCTL_FREQ_LIST_GET,
++	CMD_RTPRIV_IOCTL_TXPOWER_GET,
+ 
+ 	/* interface */
+ 	CMD_RTPRIV_IOCTL_VIRTUAL_INF_UP,
+Index: mt7628-p4rev-120395/src/embedded/os/linux/ap_ioctl.c
+===================================================================
+--- mt7628-p4rev-120395.orig/src/embedded/os/linux/ap_ioctl.c
++++ mt7628-p4rev-120395/src/embedded/os/linux/ap_ioctl.c
+@@ -258,6 +258,13 @@ INT rt28xx_ap_ioctl(struct net_device *n
+ 		case SIOCGIWPOWER:  /*get Power Management settings */
+ 		case SIOCSIWPOWER:  /*set Power Management settings */
+ 		case SIOCGIWTXPOW:  /*get transmit power (dBm) */
++			{
++				UINT32 TxPower = 0;
++				RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_TXPOWER_GET, 0, &TxPower, 0);
++				wrqin->u.txpower.flags = IW_TXPOW_MWATT;
++				wrqin->u.txpower.value = TxPower;
++				break;
++			}
+ 		case SIOCSIWTXPOW:  /*set transmit power (dBm) */
+ 		/*case SIOCGIWRANGE:	//Get range of parameters */
+ 		case SIOCGIWRETRY:	/*get retry limits and lifetime */
+@@ -268,7 +275,9 @@ INT rt28xx_ap_ioctl(struct net_device *n
+ 		    {
+ /*				struct iw_range range; */
+ 				struct iw_range *prange = NULL;
+-				//UINT32 len;
++				UINT32 len, i, val, ChannelListNum;
++				UCHAR *pChannel = NULL;
++				UINT32 *pFreq = NULL;
+ 
+ 				/* allocate memory */
+ 				os_alloc_mem(NULL, (UCHAR **)&prange, sizeof(struct iw_range));
+@@ -290,8 +299,39 @@ INT rt28xx_ap_ioctl(struct net_device *n
+ 				prange->max_qual.qual = 100;
+ 				prange->max_qual.level = 0; /* dB */
+ 				prange->max_qual.noise = 0; /* dB */
+-				/*len = */copy_to_user(wrq->u.data.pointer, prange, sizeof(struct iw_range));
+-				os_free_mem(NULL, prange);
++
++				RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_CHAN_LIST_NUM_GET, 0, &ChannelListNum, 0);
++				prange->num_channels = ChannelListNum;
++				os_alloc_mem(NULL, (UCHAR **)&pChannel, sizeof(UCHAR) * ChannelListNum);
++				if (pChannel == NULL)
++					goto GETRANGE_EXIT;
++
++				os_alloc_mem(NULL, (UCHAR **)&pFreq, sizeof(UINT32) * ChannelListNum);
++				if (pFreq == NULL)
++					goto GETRANGE_EXIT;
++
++				RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_CHAN_LIST_GET, 0, pChannel, 0);
++				RTMP_AP_IoctlHandle(pAd, NULL, CMD_RTPRIV_IOCTL_FREQ_LIST_GET, 0, pFreq, 0);
++
++				for (val = 0, i = 1; i <= prange->num_channels; i++)
++				{
++					prange->freq[val].i = pChannel[i-1];
++					prange->freq[val].m = pFreq[i - 1] * 100; /* OS_HZ */
++					prange->freq[val].e = 1;
++					val++;
++					if (val == IW_MAX_FREQUENCIES)
++						break;
++				}
++				prange->num_frequency = val;
++				
++				len = copy_to_user(wrq->u.data.pointer, prange, sizeof(struct iw_range));
++GETRANGE_EXIT:
++				if (prange)
++					os_free_mem(NULL, prange);
++				if (pChannel)
++					os_free_mem(NULL, pChannel);
++				if (pFreq)
++					os_free_mem(NULL, pFreq);
+ 		    }
+ 		    break;
+ 		    

@@ -1,0 +1,153 @@
+<%include("base/header_setting")%>
+
+<%
+local Model = require "luci.handle.util.model"
+local wifi = Model.getConfigByName("wireless", "default_mt7628")
+local wifiPrefix = "model,wireless,default_mt7628"
+
+local LuciToolStatus = require "luci.tools.status"
+local ComFun = require "luci.handle.common.function"
+local macList = {}
+if wifi.options.AccessControlList0 == nil then
+	macList = {}
+else
+	macList = ComFun.Split(wifi.options.AccessControlList0, ";")
+end
+%>
+<script type="text/javascript">
+	$(document).ready(function(){
+			$("#setMacPolicy").validator({
+				fields:{
+					mac: "required;macaddr"
+				},
+				valid: function(){
+					$.ajax({
+		        url: '<%=luci.dispatcher.build_url("api", "util", "setMacPolicy")%>',
+		        type: 'post',
+		        data: getFormJson("#setMacPolicy"),
+		        dataType: 'json',
+		        success: function(res){
+		          if(res.code == 0){
+		            window.location.reload()
+		          }
+		        }
+		      })
+				}
+			})
+
+		$("input[name='macPolicyDelect']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "macPolicyDelect")%>',
+        type: 'post',
+        data: {select: $(this).attr("data")},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+
+	$("input[name='macPolicyDelectAll']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "macPolicyDelectAll")%>',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+})
+</script>
+<div class="header">
+	<div class="title">
+		Wireless Access Policy Setting
+	</div>
+	<div class="description">
+		On this page you can configure the wireless access policy settings.
+	</div>
+</div>
+
+
+<div class="wraper">
+	<form id="setMacPolicy">
+	<div class="title">
+		Access Policy
+	</div>
+	<div class="content">
+		<script type="text/javascript">
+			function initAccessPolicy0(policy){
+				$("select[name='AccessPolicy0']").val(policy)
+			}
+			$(document).ready(function(){
+				initAccessPolicy0("<%=(wifi.options.AccessPolicy0 or 0)%>")
+			})
+		</script>
+		<div class="AccessPolicy0">
+			<table class="table-form">
+				<tr>
+					<th>Policy:</th>
+					<td>
+						<select name="AccessPolicy0">
+							<option value="0">Disable</option>
+							<option value="1">Allow</option>
+							<option value="2">Reject</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="mac">
+			<table class="table-form">
+				<tr>
+					<th>Add a station Mac:</th>
+					<td>
+						<input type="text" name="mac" data-rule="macaddr">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<input type="submit" name="setMacPolicy" value="Add">
+	</form>
+</div>
+
+<form action='<%=luci.dispatcher.build_url("api", "util", "command")%>'>
+<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+<input type="submit" name="apply" value="Apply">
+</form>
+
+
+
+<div class="wraper">
+	<div class="title">
+		Access Policy Status List
+	</div>
+	<div class="content">
+
+		<table class="table">
+			<tr>
+				<th>Mac Address</th>
+				<th></th>
+			</tr>
+			<% for i, v in ipairs(macList) do %>
+			<tr>
+				<td><%=v%></td>
+				<td>
+					<input type="button" name="macPolicyDelect" value="Delect" data="<%=i%>">
+				</td>
+			</tr>
+			<% end %>
+
+		</table>
+		<input type="button" name="macPolicyDelectAll" value="DelectAll">
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

@@ -1,0 +1,27 @@
+
+<form action="<%=luci.dispatcher.build_url("api", "util", "setStaticDhcp")%>">
+<table class="table-form">
+	<tr>
+		<th>HostName:</th>
+		<td><input type="text" name="name" data-rule="required"></td>
+	</tr>
+</table>
+<table class="table-form">
+	<tr>
+		<th>MAC-Address:</th>
+		<td><input type="text" name="mac" data-rule="required;macaddr"></td>
+	</tr>
+</table>
+<table class="table-form">
+	<tr>
+		<th>IPv4-Address:</th>
+		<td><input type="text" name="ip" data-rule="required;ip4addr"></td>
+	</tr>
+</table>
+<table class="table-form">
+	<tr>
+		<td><input type="submit" name="submit" value="Add"></td>
+		<td></td>
+	</tr>
+</table>
+</form>

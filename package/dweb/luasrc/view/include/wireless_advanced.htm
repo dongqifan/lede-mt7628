@@ -1,0 +1,218 @@
+<%
+local Model = require "luci.handle.util.model"
+local dev = Model.getConfigByName("wireless", "mt7628")
+local devPrefix = "model,wireless,mt7628"
+%>
+
+<script type="text/javascript">
+	function initWirelessAdvanced(){
+		$("select[name='<%=devPrefix%>,country']").val("<%=(dev.options.country or 'US')%>")
+		$("select[name='<%=devPrefix%>,region']").val("<%=(dev.options.region or 5)%>")
+		$("select[name='<%=devPrefix%>,bgprotect']").val("<%=(dev.options.bgprotect or 0)%>")
+		$("select[name='<%=devPrefix%>,txpreamble']").val("<%=(dev.options.txpreamble or 1)%>")
+		$("select[name='<%=devPrefix%>,shortslot']").val("<%=(dev.options.shortslot or 1)%>")
+		$("select[name='<%=devPrefix%>,txburst']").val("<%=(dev.options.txburst or 1)%>")
+		$("select[name='<%=devPrefix%>,pktaggre']").val("<%=(dev.options.pktaggre or 1)%>")
+		$("select[name='<%=devPrefix%>,ieee80211h']").val("<%=(dev.options.ieee80211h or 1)%>")
+		$("select[name='<%=devPrefix%>,txbf']").val("<%=(dev.options.txbf or 0)%>")
+		$("select[name='igmpsnoop']").val("<%=(dev.options.igmpsnoop or 1)%>")
+	}
+
+	$(document).ready(function(){
+		initWirelessAdvanced()
+	})
+</script>
+<div id="conunty">
+	<table class="table-form">
+		<tr>
+			<th>Country Code:</th>
+			<td>
+				<select name="<%=devPrefix%>,country">
+					<option value="US">US</option>
+					<option value="JP">JP</option>
+					<option value="FR">FR</option>
+					<option value="TW">TW</option>
+					<option value="IE">IE</option>
+					<option value="HK">HK</option>
+					<option value="None">None</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="region">
+	<table class="table-form">
+		<tr>
+			<th>Support Channel:</th>
+			<td>
+				<select name="<%=devPrefix%>,region">
+					<option value="0">CH1~11</option>
+					<option value="1">CH1~13</option>
+					<option value="2">CH10~11</option>
+					<option value="3">CH10~13</option>
+					<option value="4">CH13</option>
+					<option value="5">CH1~14</option>
+					<option value="6">CH3~9</option>
+					<option value="7">CH5~13</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="bgprotect">
+	<table class="table-form">
+		<tr>
+			<th>BG Protection Mode:</th>
+			<td>
+				<select name="<%=devPrefix%>,bgprotect">
+					<option value="0">Auto</option>
+					<option value="1">on</option>
+					<option value="2">off</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="beacon">
+	<table class="table-form">
+		<tr>
+			<th>Beacon Interval:</th>
+			<td>
+				<input type="text" name="<%=devPrefix%>,beacon" value="<%=(dev.options.beacon or 100)%>" data-rule="required;range(20~999)">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="dtim">
+	<table class="table-form">
+		<tr>
+			<th>Data Beacon Rate:</th>
+			<td>
+				<input type="text" name="<%=devPrefix%>,dtim" value="<%=(dev.options.dtim or 1)%> " data-rule="required;range(1~255)">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="fragthres">
+	<table class="table-form">
+		<tr>
+			<th>Fragment Threshold:</th>
+			<td>
+				<input type="text" name="<%=devPrefix%>,fragthres" value="<%=(dev.options.fragthres or 2346)%>" data-rule="required; range(255~2346)">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="rtsthres">
+	<table class="table-form">
+		<tr>
+			<th>RTS Threshold:</th>
+			<td>
+				<input type="text" name="<%=devPrefix%>,rtsthres" value="<%=(dev.options.rtsthres or 2347)%>" data-rule="required; range(1~2347)">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="txpower">
+	<table class="table-form">
+		<tr>
+			<th>TX Power:</th>
+			<td>
+				<input type="text" name="<%=devPrefix%>,txpower" value="<%=(dev.options.txpower or 100)%>" data-rule="required;range(1~100)">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="txpreamble">
+	<table class="table-form">
+		<tr>
+			<th>Short Preamble:</th>
+			<td>
+				<select name="<%=devPrefix%>,txpreamble">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="shortslot">
+	<table class="table-form">
+		<tr>
+			<th>Short Slot:</th>
+			<td>
+				<select name="<%=devPrefix%>,shortslot">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="txburst">
+	<table class="table-form">
+		<tr>
+			<th>Tx Burst:</th>
+			<td>
+				<select name="<%=devPrefix%>,txburst">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="pktaggre">
+	<table class="table-form">
+		<tr>
+			<th>Pkt_Aggregate:</th>
+			<td>
+				<select name="<%=devPrefix%>,pktaggre">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ieee80211h">
+	<table class="table-form">
+		<tr>
+			<th>IEEE 802.11H Support:</th>
+			<td>
+				<select name="<%=devPrefix%>,ieee80211h">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="txbf">
+	<table class="table-form">
+		<tr>
+			<th>Tx Beamforming:</th>
+			<td>
+				<select name="<%=devPrefix%>,txbf">
+					<option value="0">Disable</option>
+					<option value="1">Implicit TxBF</option>
+					<option value="2">Explicit TxBF</option>
+					<option value="3">Both</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="igmpsnoop">
+	<table class="table-form">
+		<tr>
+			<th>IGMP Snooping:</th>
+			<td>
+				<select name="<%=devPrefix%>,igmpsnoop">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>

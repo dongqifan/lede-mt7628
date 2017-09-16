@@ -1,0 +1,97 @@
+<%include("base/header_setting")%>
+<script type="text/javascript">
+	//建立异步ajax
+  $(document).ready(function(){
+    $("input[name='ping']").on("click", function(){
+      $.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "system", "ping")%>',
+        type: 'post',
+        data: getFormJson("#diagnostic"),
+        dataType: 'json',
+        success: function(res){
+            $("#infomation").val(res.message)
+        }
+      })
+    })
+
+    $("input[name='traceroute']").on("click", function(){
+      $.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "system", "traceroute")%>',
+        type: 'post',
+        data: getFormJson("#diagnostic"),
+        dataType: 'json',
+        success: function(res){
+            $("#infomation").val(res.message)
+        }
+      })
+    })
+
+    $("input[name='nslookup']").on("click", function(){
+      $.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "system", "nslookup")%>',
+        type: 'post',
+        data: getFormJson("#diagnostic"),
+        dataType: 'json',
+        success: function(res){
+            $("#infomation").val(res.message)
+        }
+      })
+    })
+  })
+</script>
+
+<div class="header">
+	<div class="title">
+		Diagnostic Tools
+	</div>
+	<div class="description">
+		On this page, you can use some diagnostic tools to test your networks.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Tools
+	</div>
+	<div class="content">
+		<form id="diagnostic">
+
+
+		<table class="table-form">
+			<tr>
+				<th>Test Host:</th>
+				<td>
+					<input type="text" value="openwrt.org" name="host" /><br />
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Ping Test:</th>
+				<td>
+					<input type="button" name="ping" value="Ping">
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Traceroute Test:</th>
+				<td>
+					<input type="button" name="traceroute" value="Traceroute">
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>nslookup Test:</th>
+				<td>
+					<input type="button" name="nslookup" value="nslookup">
+				</td>
+			</tr>
+		</table>
+
+		</form>
+		<textarea  style="width:95%; height:200px" id="infomation"></textarea>
+	</div>
+</div>
+<%include("base/footer_setting")%>

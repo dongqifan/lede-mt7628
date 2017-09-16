@@ -1,0 +1,29 @@
+ <%
+   local img_url = {"AP.jpg", "router.jpg", "repeater.jpg", "repeaterWISP.jpg", "client.jpg", "WISP_client_WISP.jpg"}
+   local vallist = {"Aceess Point", "Router", "Repeater", "WISP", "Client", "Client WISP"}
+   local keylist = {"bridge", "gateway", "repeater", "wisp", "client", "client_wisp"}
+   local comFun = require "luci.handle.common.function"
+   local url = comFun.Split(REQUEST_URI, "/")
+   local op = url[#url]
+  %>
+  <script>
+  function operationWebChange(value){
+    location.href = "<%=controller%>/web/quick_start/" + value;
+  }
+
+  </script>
+
+  <div style="text-align:center;">
+  <%
+    for i, key in pairs(keylist) do
+  %>
+
+
+  <div style="display:inline-block;">
+    <div><img src="<%=resource%>/opMode-img/<%=img_url[i]%>" alt=""></div>
+    <input name="model,network,op,mode" onclick="operationWebChange(this.value)" type="radio" value="<%=keylist[i]%>" <% if op == keylist[i] then%> checked <%end%>/>
+    <br>
+    <label><%=vallist[i]%></label>
+  </div>
+  <% end %>
+  </div>

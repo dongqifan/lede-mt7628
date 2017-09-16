@@ -1,0 +1,22 @@
+<%include("base/header_setting")%>
+<div class="header">
+	<div class="title">
+		Router Password
+	</div>
+	<div class="description">
+		Changes the administrator password for accessing the device
+	</div>
+</div>
+
+<form action="<%=luci.dispatcher.build_url("api", "system", "login")%>">
+<div class="wraper">
+	<div class="title">
+		Password
+	</div>
+	<div class="content">
+		<%include("include/password")%>
+	</div>
+</div>
+<% include ("base/action")%>
+</form>
+<%include("base/footer_setting")%>

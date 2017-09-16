@@ -1,0 +1,152 @@
+<%include("base/header_setting")%>
+
+<%
+
+local Model = require "luci.handle.util.model"
+local pf = Model.getConfigByType("firewall", "redirect")
+
+%>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+			$("#port_forwarding").validator({
+				fields:{
+					src_dport: "required;range(0~65535)",
+					dest_ip: "required;ip4addr",
+					dest_port: "port:required;range(0~65535)"
+				},
+				valid: function(){
+					$.ajax({
+		        url: '<%=luci.dispatcher.build_url("api", "util", "port_forwarding")%>',
+		        type: 'post',
+		        data: getFormJson("#port_forwarding"),
+		        dataType: 'json',
+		        success: function(res){
+		          if(res.code == 0){
+		            window.location.reload()
+		          }
+		        }
+		      })
+				}
+			})
+
+		$("input[name='detectPortForwarding']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "detectPortForwarding")%>',
+        type: 'post',
+        data: {select: $(this).attr("data")},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+
+	$("input[name='detectPortForwardingAll']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "detectPortForwardingAll")%>',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+})
+</script>
+
+<div class="header">
+	<div class="title">
+		Port Forwarding
+	</div>
+	<div class="description">
+		On this page, you can configuration the port forwarding function.
+	</div>
+
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Port Forwarding
+	</div>
+	<div class="content">
+	<form id="port_forwarding">
+		<table class="table-form">
+			<tr>
+				<th>Wan Port:</th>
+				<td>
+					<input type="text" name="src_dport">
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Protocal:</th>
+				<td>
+					<select name="proto">
+						<option value="tcp">TCP</option>
+						<option value="udp">UDP</option>
+						<option value="tcpudp">Both</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>LAN IP:</th>
+				<td>
+					<input type="text" name="dest_ip">
+				</td>
+			</tr>
+		</table>
+		<table class="table-form">
+			<tr>
+				<th>Lan Port:</th>
+				<td>
+					<input type="text" name="dest_port">
+				</td>
+			</tr>
+		</table>
+		<input type="submit" name="port_forwarding" value="Add">
+		</form>
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Port Forwarding Status
+	</div>
+	<div class="content">
+
+		<table class="table">
+			<tr>
+				<th>Wan Port</th>
+				<th>Protocal</th>
+				<th>Lan IP</th>
+				<th>Lan Port</th>
+				<th></th>
+			</tr>
+			<% for i, v in ipairs(pf) do %>
+			<% if v.options and v.options.comment == "port_forwarding" then%>
+				<tr>
+					<td><%=v.options.src_dport%></td>
+					<td><%=v.options.proto%></td>
+					<td><%=v.options.dest_ip%></td>
+					<td><%=v.options.dest_port%></td>
+					<td>
+						<input type="button" name="detectPortForwarding" value="Delete" data="<%=v.name%>">
+					</td>
+				</tr>
+			<%end%>
+			<%end%>
+		</table>
+		<input type="button" name="detectPortForwardingAll" value="Delete All">
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

@@ -1,0 +1,58 @@
+
+<script type="text/javascript">
+function wpsControl(method){
+	if(method == "pbc"){
+		$("#pinCode").hide()
+	}else if(method == "pin"){
+		$("#pinCode").show()
+	}
+}
+</script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("input[name='wpsMethod']").on("click", function(){
+    	wpsControl($(this).attr("value"))
+    })
+		$("input[name='startWps']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "startWps")%>',
+        type: 'post',
+				data: getFormJson("#startWps"),
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            alert('wps start')
+          }
+        }
+      })
+    })
+})
+</script>
+<form id="startWps">
+
+
+<div id="wpsMethod">
+	<table class="table-form">
+		<tr>
+			<th>WPS Method:</th>
+			<td>
+				<input type="radio" name="wpsMethod" value="pbc">WPS PBC
+				<input type="radio" name="wpsMethod" value="pin">WPS PIN
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="pinCode" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>WPS Pin:</th>
+			<td>
+				<input type="text" name="pinCode" value="47758483" maxlength="10">
+			</td>
+		</tr>
+	</table>
+</div>
+
+<input type="button" name="startWps" value="Start WPS">
+</form>

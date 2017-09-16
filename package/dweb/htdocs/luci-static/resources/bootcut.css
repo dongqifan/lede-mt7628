@@ -1,0 +1,165 @@
+/*
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Bootcut v0.0.1
+ * Anthor: 董启凡;
+ * Date: 20170216;
+ */
+
+html, body {
+	background-color:#EBEBEB;
+	font: 12px/1.4 Arial,toTahoma,Helvetica,sans-serif;
+	background: #ebebeb;
+	margin:0;
+	padding: 0;
+}
+
+
+.table-form{
+	margin-bottom: 20px;
+	width: 100%;
+}
+.table-form th{
+	width: 30%;
+	text-align: left;
+}
+/*
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    zoom: 1;
+}
+
+*/
+.block{
+	border: 1px solid #c0c0c0;
+  	padding: 20px 10px 0 20px;
+	margin-bottom: 10px;
+	background: #ffffff;
+}
+
+/*menu*/
+
+.menu-block{
+	border: 1px solid #DBDBDB;
+	padding: 20px 10px 10px 10px;
+	border-radius: 10px;
+	background: #FFFFFF;
+}
+
+dl.menu{
+	margin: 0 0 5px 0;
+}
+.menu dt{
+	padding: 4px 15px;
+    font-size: 1.2em;
+    color: #ffffff;
+    background-color: #3966AE;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.menu dt.active{
+	background: #00A8EC;
+}
+
+
+.menu dd{
+	 padding: 5px 0;
+    border-bottom: 1px solid #C0C0C0;
+    font-weight: bold;
+    color: #5E5E5E;
+    margin: 0 0 0 10px;
+    cursor: pointer;
+}
+
+.menu dd.active{
+	color:#00A8EC;
+}
+dd img{
+	padding-right: 10px;
+}
+
+/* end menu*/
+
+.header{
+	margin-bottom: 10px;
+}
+
+.header .title{
+	color: #335A9A;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.header .description{
+	color: #666666;
+}
+
+.wraper{
+	margin-bottom: 10px;
+}
+.wraper .title{
+	background: #3966AE;
+    padding: 5px 0 5px 15px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.wraper .content{
+	padding-top: 20px;
+    padding-left: 15px;
+    border: 1px solid #D3D3D3;
+    background: #FFFFFF;
+    color: #000000;
+}
+/* content*/
+
+.count{
+	border: 1px solid #c0c0c0;
+	width: 350px;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 200px
+}
+.count .count_text {
+	margin-top: 80px;
+}
+
+
+/*辅助类*/
+
+.pull-left{
+	float:left;
+}
+
+
+.pull-right{
+	float:right
+}
+.center{
+	text-align:center;
+}
+.hidden{
+	display: none;
+}
+
+
+
+
+/* fix bootstrap some css*/
+
+
+input[type="radio"], input[type="checkbox"] {
+    margin: 0 !important;
+    line-height: normal;
+}
+form{
+	margin: 0;
+	padding: 0;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input{
+	margin: 0 !important;
+}

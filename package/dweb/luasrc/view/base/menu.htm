@@ -1,0 +1,157 @@
+
+<%
+local ComFun = require "luci.handle.common.function"
+local w = ComFun.Split(REQUEST_URI, "/")
+if w[5] == "status" then
+	if w[6] == nil then
+		w[6] = "status_info"
+		w[7] = "device_info"
+	end
+elseif w[5] == "network" then
+	if w[6] == nil then
+		w[6] = "wan"
+		w[7] = "wan"
+	end
+elseif w[5] == "advanced" then
+	if w[6] == nil then
+		w[6] = "firewall"
+		w[7] = "port_forwarding"
+	end
+elseif w[5] == "maintenace" then
+	if w[6] == nil then
+		w[6] = "update"
+		w[7] = "firmware"
+	end
+end
+
+if w[7] == "firmware" then
+	w[5] = "maintenace"
+	w[6] = "update"
+	w[7] = "firmware"
+end
+%>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("dt").on("click", function(){
+			location.href = $(this).attr('href');
+		})
+		$("dd").on("click", function(){
+			location.href = $(this).attr("href");
+		})
+	})
+</script>
+<div class="menu-block">
+
+
+<% if w[5] == "status" then%>
+	<dl class="menu">
+	<% if w[6] == "status_info" then %>
+		<dt class='active' href="<%=controller%>/web/status/status_info/device_info">Status info</dt>
+		<dd <% if w[7] == "device_info" then%> class="active" <%end%> href="<%=controller%>/web/status/status_info/device_info"><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Device info</dd>
+		<dd <% if w[7] == "wireless_info" then%> class="active" <%end%> href="<%=controller%>/web/status/status_info/wireless_info" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Wireless Info</dd>
+	<%else%>
+		<dt href="<%=controller%>/web/status/status_info/device_info">Status info</dt>
+		<dd class="hidden" href="<%=controller%>/web/status/status_info/device_info"><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Device info</dd>
+		<dd class="hidden" href="<%=controller%>/web/status/status_info/wireless_info"><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Wireless Info</dd>
+	<%end%>
+	</dl>
+	<dl class="menu">
+	<% if w[6] == "statistics" then %>
+	<dt class = "active" href="<%=controller%>/web/status/statistics/statistic">Statistics</dt>
+		<dd <% if w[7] == "statistic" then%> class="active" <%end%> href="<%=controller%>/web/status/statistics/statistic" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Statistic</dd>
+	<%else%>
+	<dt href="<%=controller%>/web/status/statistics/statistic">Statistics</dt>
+		<dd class="hidden" href="<%=controller%>/web/status/statistics/statistic"><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Statistic</dd>
+	<%end%>
+
+	</dl>
+<% elseif w[5] == "network" then %>
+	<dl class="menu">
+		<% if w[6] == "wan" then %>
+		<dt class="active" href = "<%=controller%>/web/network/wan/wan" >Wan</dt>
+		<dd <% if w[7] == "wan" then %>class="active"<%end%> href = "<%=controller%>/web/network/wan/wan" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Wan</dd>
+		<dd <% if w[7] == "3g" then %>class="active"<%end%> href = "<%=controller%>/web/network/wan/3g" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">3G</dd>
+		<%else%>
+		<dt href = "<%=controller%>/web/network/wan/wan">Wan</dt>
+		<%end%>
+	</dl>
+	<dl class = "menu" >
+		<% if w[6] == "lan" then %>
+		<dt class="active" href = "<%=controller%>/web/network/lan/lan" >Lan</dt>
+		<dd <% if w[7] == "lan" then %> class = "active" <%end%> href = "<%=controller%>/web/network/lan/lan" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Lan</dd>
+		<dd <% if w[7] == "dhcp" then %>class="active" <%end%> href = "<%=controller%>/web/network/lan/dhcp" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">DHCP</dd>
+		<%else%>
+		<dt href = "<%=controller%>/web/network/lan/lan" >Lan</dt>
+		<%end%>
+	</dl>
+	<dl class = "menu" >
+		<% if w[6] == "wireless" then %>
+		<dt class = "active" href = "<%=controller%>/web/network/wireless/wireless_setting"   >Wireless</dt>
+		<dd <% if w[7] == "wireless_setting" then %>class="active"<%end%> href = "<%=controller%>/web/network/wireless/wireless_setting" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Wireless Basic</dd>
+		<dd <% if w[7] == "wireless_security" then %>class="active"<%end%> href = "<%=controller%>/web/network/wireless/wireless_security" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Wireless Security</dd>
+		<dd <% if w[7] == "wireless_advanced" then %>class="active"<%end%> href = "<%=controller%>/web/network/wireless/wireless_advanced" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Advanced</dd>
+		<dd <% if w[7] == "access_policy" then %>class="active"<%end%> href = "<%=controller%>/web/network/wireless/access_policy" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Aeceess Policy</dd>
+		<dd <% if w[7] == "wps" then %>class="active"<%end%> href = "<%=controller%>/web/network/wireless/wps" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">WPS</dd>
+		<%else%>
+		<dt  href = "<%=controller%>/web/network/wireless/wireless_setting"   >Wireless</dt>
+		<%end%>
+    </dl>
+<!--
+	<dl class = "menu" >
+		<% if w[6] == "advanced" then %>
+		<dt class="active" href = "<%=controller%>/web/network/advanced/ipv6" >Advanced</dt>
+		<dd <% if w[7] == "ipv6" then %> class = "active" <%end%> href = "<%=controller%>/web/network/advanced/ipv6" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Ipv6</dd>
+		<%else%>
+		<dt href = "<%=controller%>/web/network/advanced/ipv6" >Advanced</dt>
+		<%end%>
+	</dl>
+-->
+<% elseif w[5] == "advanced" then %>
+<!--
+	<dl class="menu">
+		<% if w[7] == "security" then %>
+		<dt  class="active" href="<%=controller%>/web/advanced/security/ip_filtering">Security</dt>
+		<dd <% if w[8] == "ip_filtering" then %> class="active" <%end%> href="<%=controller%>/web/advanced/security/ip_filtering" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Ip Filtering</dd>
+		<dd <% if w[8] == "port_filtering" then %> class="active" <%end%> href="<%=controller%>/web/advanced/security/port_filtering" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Port Filtering</dd>
+		<dd <% if w[8] == "mac_filtering" then %> class="active" <%end%> href="<%=controller%>/web/advanced/security/mac_filtering" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Mac Filtering</dd>
+		<dd <% if w[8] == "url_filtering" then %> class="active" <%end%> href="<%=controller%>/web/advanced/security/url_filtering" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">URL Filtering</dd>
+		<%else%>
+		<dt  href="<%=controller%>/web/advanced/security/ip_filtering">Security</dt>
+		<%end%>
+	</dl>
+	-->
+	<dl class="menu">
+		<% if w[6] == "firewall" then %>
+		<dt  class="active" href="<%=controller%>/web/advanced/firewall/port_forwarding">Firewall</dt>
+		<dd <% if w[7] == "port_forwarding" then %> class="active" <%end%> href="<%=controller%>/web/advanced/firewall/port_forwarding" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Port Forwarding</dd>
+		<dd <% if w[7] == "dmz" then %> class="active" <%end%> href="<%=controller%>/web/advanced/firewall/dmz" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">DMZ</dd>
+		<%else%>
+		<dt  href="<%=controller%>/web/advanced/firewall/port_forwarding">Firewall</dt>
+		<%end%>
+	</dl>
+<% elseif w[5] == "maintenace" then %>
+	<dl class="menu">
+		<% if w[6] == "update" then %>
+		<dt  class="active" href="<%=controller%>/web/maintenace/update/firmware">Update</dt>
+		<dd <% if w[7] == "firmware" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/update/firmware" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Firmware</dd>
+		<dd <% if w[7] == "backup" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/update/backup" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Backup/Restore</dd>
+		<%else%>
+		<dt  href="<%=controller%>/web/maintenace/update/firmware">Firmware</dt>
+		<%end%>
+	</dl>
+	<dl class="menu">
+		<% if w[6] == "admin" then %>
+		<dt  class="active" href="<%=controller%>/web/maintenace/admin/login">Admin</dt>
+		<dd <% if w[7] == "login" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/admin/login" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Login</dd>
+		<dd <% if w[7] == "restart" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/admin/restart" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Restart</dd>
+		<dd <% if w[7] == "time" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/admin/time" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Time</dd>
+		<dd <% if w[7] == "system_log" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/admin/system_log" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">System Log</dd>
+		<dd <% if w[7] == "diagnostic_tools" then %> class="active" <%end%> href="<%=controller%>/web/maintenace/admin/diagnostic_tools" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Diagnostic Tools</dd>
+		<%else%>
+		<dt href="<%=controller%>/web/maintenace/admin/login">Admin</dt>
+		<%end%>
+	</dl>
+
+<%end%>
+</div>

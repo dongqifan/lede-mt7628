@@ -1,0 +1,24 @@
+<%include("base/header_setting")%>
+
+<%
+local syslog = luci.sys.syslog()
+%>
+<div class="header">
+	<div class="title">
+		System Log
+	</div>
+	<div class="description">
+		On this page, there are some system log.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		System log
+	</div>
+	<div class="content">
+		<textarea readonly="readonly" wrap="off" id="syslog" style="width:95%; height:700px"><%=syslog:pcdata()%></textarea>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

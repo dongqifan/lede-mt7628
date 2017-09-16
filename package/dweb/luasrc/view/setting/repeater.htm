@@ -1,0 +1,15 @@
+<% include("base/header_quick")%>
+<form action="<%=luci.dispatcher.build_url("api", "common")%>">
+	<% include("include/opmode") %>
+	<div class = "block">
+    <% include("include/ra0_security")%>
+  </div>
+  <div class="block">
+    <% include("include/apcli0_security")%>
+  </div>
+	<input type="hidden" name="commit" value="network,dhcp,wireless">
+	<input type="hidden" name="page" value="repeater">
+	<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+  <% include ("base/action")%>
+  </form>
+<% include("base/footer_quick")%>

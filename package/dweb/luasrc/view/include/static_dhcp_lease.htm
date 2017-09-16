@@ -1,0 +1,56 @@
+<%
+local LuciToolStatus = require "luci.tools.status"
+local Model = require "luci.handle.util.model"
+local dhcpStatic = Model.getStaticDHCPInfo()
+%>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("input[name='detectStaticDhcp']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "detectStaticDhcp")%>',
+        type: 'post',
+        data: {select: $(this).attr("data")},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+
+	$("input[name='delectAllStaticDhcp']").on("click", function(){
+    	$.ajax({
+        url: '<%=luci.dispatcher.build_url("api", "util", "delectAllStaticDhcp")%>',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function(res){
+          if(res.code == 0){
+            window.location.reload()
+          }
+        }
+      })
+    })
+})
+</script>
+<table class="table">
+			<tr>
+				<th>Hostname</th>
+				<th>MAC-Address</th>
+				<th>IPv4-Address</th>
+				<th></th>
+			</tr>
+			<% for i, v in ipairs(dhcpStatic) do %>
+			<tr>
+				<td><%=v.name%></td>
+				<td><%=v.mac%></td>
+				<td><%=v.ip%></td>
+				<td>
+					<input type="button" name="detectStaticDhcp" value="Delect" data = "<%=v.sId%>">
+				</td>
+			</tr>
+			<%end%>
+
+</table>
+<input type="button" name="delectAllStaticDhcp" value="DelectAll">

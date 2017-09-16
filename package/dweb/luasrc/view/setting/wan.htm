@@ -1,0 +1,29 @@
+<%include("base/header_setting")%>
+
+<form action="<%=luci.dispatcher.build_url("api", "common")%>">
+
+		<div class="header">
+			<div class="title">
+				Wan Setting
+			</div>
+			<div class="description">
+				On this page you can configure the Wan network interfaces.
+			</div>
+		</div>
+
+
+		<div class="wraper">
+			<div class="title">
+				Proto
+			</div>
+			<div class="content">
+				<%include("include/wan_proto")%>
+			</div>
+		</div>
+		<input type="hidden" name="commit" value="network">
+		<input type="hidden" name="page" value="wan">
+		<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+		<% include ("base/action")%>
+</form>
+
+<%include("base/footer_setting")%>

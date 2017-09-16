@@ -1,0 +1,57 @@
+<%include("base/header_setting")%>
+
+<%
+
+local Model = require "luci.handle.util.model"
+local dmz = Model.getConfigByName('firewall', "dmz")
+%>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("input[name='dmz']").on("click", function(){
+			$("#dmz").isValid(function(){
+				$.ajax({
+	        url: '<%=luci.dispatcher.build_url("api", "util", "dmz")%>',
+	        type: 'post',
+	        data: getFormJson("#dmz"),
+	        dataType: 'json',
+	        success: function(res){
+	          if(res.code == 0){
+	            window.location.reload()
+	          }
+	        }
+	      })
+			})
+    })
+	})
+</script>
+
+
+<div class="header">
+	<div class="title">
+		DMZ
+	</div>
+	<div class="description">
+		On this page, you can configuration the DMZ function.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		DMZ
+	</div>
+	<div class="content">
+	<form id="dmz">
+		<table class="table-form">
+			<tr>
+				<th>IP Address:</th>
+				<td>
+					<input type="text" name="dest_ip" value="<%=dmz.options.dest_ip%>" data-rule="ip4addr">
+				</td>
+			</tr>
+		</table>
+		<input type="button" name="dmz" value="Apply">
+	</form>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

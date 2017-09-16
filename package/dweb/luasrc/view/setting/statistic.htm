@@ -1,0 +1,46 @@
+<%include("base/header_setting")%>
+
+<%
+local Model = require "luci.handle.util.model"
+local rw = Model.getInterfaceStatistics()
+%>
+
+<div class="header">
+	<div class="title">
+		Statistics
+	</div>
+	<div class="description">
+		This page shows the packet statistics for transmission and reception regarding to network interface.
+	</div>
+</div>
+<div class="wraper">
+	<div class="title">
+		Statistics
+	</div>
+	<div class="content">
+		<table class="table">
+			<tr>
+				<th>Interface</th>
+				<th>Rx pkt</th>
+				<th>Rx err</th>
+				<th>Rx drop</th>
+				<th>Tx pkt</th>
+				<th>Tx err</th>
+				<th>Tx drop</th>
+			</tr>
+			<% for i, v in ipairs(rw) do %>
+			<tr>
+				<td><%=v.interface%></td>
+				<td><%=v.rx_packets%></td>
+				<td><%=v.rx_errs%></td>
+				<td><%=v.rx_drop%></td>
+				<td><%=v.tx_packets%></td>
+				<td><%=v.tx_errs%></td>
+				<td><%=v.tx_drop%></td>
+			</tr>
+			<%end%>
+		</table>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

@@ -1,0 +1,334 @@
+<%include("base/header_setting")%>
+
+<%
+local Model = require "luci.handle.util.model"
+local dev = Model.getConfigByName("wireless", "mt7628")
+local iface = Model.getConfigByName("wireless", "default_mt7628")
+local devPrefix = "model,wireless,mt7628"
+%>
+<script type="text/javascript">
+	function initChannelOptions(region){
+		$("#channelSelect").empty();
+		$("#channelSelect").append("<option value='0'>Auto</option>");
+		if(region == "0" || region == "1" || region == "5" || region == "31" || region == "32" || region == "32" || region == "33"){
+			$("#channelSelect").append("<option value='1'>1</option>");
+			$("#channelSelect").append("<option value='2'>2</option>");
+		}
+		if(region == "0" || region == "1" || region == "5" || region == "31" || region == "32" || region == "32" || region == "33" || region == "6"){
+			$("#channelSelect").append("<option value='3'>3</option>");
+			$("#channelSelect").append("<option value='4'>4</option>");
+		}
+		if(region == "0" || region == "1" || region == "5" || region == "31" || region == "32" || region == "32" || region == "33" || region == "6" || region == "7"){
+			$("#channelSelect").append("<option value='5'>5</option>");
+			$("#channelSelect").append("<option value='6'>6</option>");
+			$("#channelSelect").append("<option value='7'>7</option>");
+			$("#channelSelect").append("<option value='8'>8</option>");
+			$("#channelSelect").append("<option value='9'>9</option>");
+		}
+		if(region == "0" || region == "1" || region == "5" || region == "31" || region == "32" || region == "32" || region == "33" || region == "2" || region == "3" || region == "7"){
+			$("#channelSelect").append("<option value='10'>10</option>");
+			$("#channelSelect").append("<option value='11'>11</option>");
+		}
+		if(region == "7" || region == "1" || region == "5" || region == "31" || region == "33" || region == "3"){
+			$("#channelSelect").append("<option value='12'>12</option>");
+			$("#channelSelect").append("<option value='13'>13</option>");
+		}
+		if(region == "4" || region == "5" || region == "31" || region == "33"){
+			$("#channelSelect").append("<option value='14'>14</option>");
+		}
+	}
+
+	function ht_bsscoexistShow(wifimode, bw){
+		if((wifimode == "7" || wifimode == "9") && bw == "1"){
+			$("#ht_bsscoexist").show();
+		}else{
+			$("#ht_bsscoexist").hide();
+		}
+	}
+
+	function initWirelessBasic(){
+		$("select[name='<%=devPrefix%>,radio']").val("<%=(dev.options.radio or 1)%>");
+		$("select[name='<%=devPrefix%>,wifimode']").val("<%=(dev.options.wifimode or 9)%>")
+		$("select[name='<%=devPrefix%>,channel']").val("<%=(dev.options.channel)%>")
+		$("select[name='<%=devPrefix%>,bw']").val("<%=(dev.options.bw or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_bsscoexist']").val("<%=(dev.options.ht_bsscoexist or 0)%>")
+		$("select[name='<%=devPrefix%>,ht_opmode']").val("<%=(dev.options.ht_opmode or 0)%>")
+		$("select[name='<%=devPrefix%>,ht_gi']").val("<%=(dev.options.ht_gi or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_rdg']").val("<%=(dev.options.ht_rdg or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_stbc']").val("<%=(dev.options.ht_stbc or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_amsdu']").val("<%=(dev.options.ht_amsdu or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_autoba']").val("<%=(dev.options.ht_autoba or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_badec']").val("<%=(dev.options.ht_badec or 0)%>")
+		$("select[name='<%=devPrefix%>,ht_distkip']").val("<%=(dev.options.ht_distkip or 1)%>")
+		$("select[name='<%=devPrefix%>,ht_ldpc']").val("<%=(dev.options.ht_ldpc or 0)%>")
+		$("select[name='<%=devPrefix%>,ht_txstream']").val("<%=(dev.options.ht_txstream or 2)%>")
+		$("select[name='<%=devPrefix%>,ht_rxstream']").val("<%=(dev.options.ht_rxstream or 2)%>")
+	}
+
+	$(document).ready(function(){
+		initWirelessBasic();
+		initChannelOptions("<%=(dev.options.region or 5)%>");
+		ht_bsscoexistShow("<%=dev.options.wifimode or 9%>", "<%=dev.options.bw%>");
+		$("select[name='<%=devPrefix%>,wifimode']").on("change", function(){
+			var wifimode = $("select[name='<%=devPrefix%>,wifimode']").val();
+			var bw = $("select[name='<%=devPrefix%>,bw']").val();
+			ht_bsscoexistShow(wifimode, bw);
+		})
+		$("select[name='<%=devPrefix%>,bw']").on("change", function(){
+			var wifimode = $("select[name='<%=devPrefix%>,wifimode']").val();
+			var bw = $("select[name='<%=devPrefix%>,bw']").val();
+			ht_bsscoexistShow(wifimode, bw);
+		})
+	})
+
+
+</script>
+
+
+<div class="header">
+	<div class="title">
+		Wireless basic Settings
+	</div>
+	<div class="description">
+		On this page you can configure the wireless basic settings.
+	</div>
+</div>
+<form action="<%=luci.dispatcher.build_url("api", "common")%>">
+
+
+<div class="wraper">
+	<div class="title">
+		General Settings
+	</div>
+	<div class="content">
+<div id="radio" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>Radio on/off:</th>
+			<td>
+				<select name="<%=devPrefix%>,radio">
+					<option value="1">on</option>
+					<option value="0">off</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="wifimode">
+	<table class="table-form">
+		<tr>
+			<th>Network Mode:</th>
+			<td>
+				<select name="<%=devPrefix%>,wifimode">
+					<option value="0">802.11b/g</option>
+					<option value="1">802.11b</option>
+					<option value="4">802.11g</option>
+					<option value="7">802.11g/n</option>
+					<option value="9">802.11b/g/n</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="channel">
+	<table class="table-form">
+		<tr>
+			<th>Channel:</th>
+			<td>
+				<select name="<%=devPrefix%>,channel" id="channelSelect">
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="bw">
+	<table class="table-form">
+		<tr>
+			<th>Band Width:</th>
+			<td>
+				<select name="<%=devPrefix%>,bw" >
+					<option value="0">20MHz</option>
+					<option value="1">40MHz</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		HT Physical Mode
+	</div>
+	<div class="content">
+		<div id="ht_bsscoexist" class="hidden">
+	<table class="table-form">
+		<tr>
+			<th>20/40 Coexistence:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_bsscoexist">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_opmode">
+	<table class="table-form">
+		<tr>
+			<th>Operating Mode:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_opmode">
+					<option value="0">Mixed Mode</option>
+					<option value="1">Green Mode</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_gi">
+	<table class="table-form">
+		<tr>
+			<th>Guard Interval:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_gi">
+					<option value="0">long</option>
+					<option value="1">auto</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_rdg">
+	<table class="table-form">
+		<tr>
+			<th>Reverse Direction Grant(RDG):</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_rdg">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_stbc">
+	<table class="table-form">
+		<tr>
+			<th>Space Time Block Coding (STBC):</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_stbc">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_amsdu">
+	<table class="table-form">
+		<tr>
+			<th>Aggregation MSDU(A-MSDU):</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_amsdu">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_autoba">
+	<table class="table-form">
+		<tr>
+			<th>Auto Block ACK</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_autoba">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_badec">
+	<table class="table-form">
+		<tr>
+			<th>Decline BA Request:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_badec">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_distkip">
+	<table class="table-form">
+		<tr>
+			<th>HT Disallow TKIP:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_distkip">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_ldpc">
+	<table class="table-form">
+		<tr>
+			<th>HT LDPC</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_ldpc">
+					<option value="0">Disable</option>
+					<option value="1">Enable</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_txstream">
+	<table class="table-form">
+		<tr>
+			<th>HT TxStream:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_txstream">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="ht_rxstream">
+	<table class="table-form">
+		<tr>
+			<th>HT RxStream:</th>
+			<td>
+				<select name="<%=devPrefix%>,ht_rxstream">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+</div>
+</div>
+<input type="hidden" name="commit" value="wireless">
+<input type="hidden" name="page" value="wireless_setting">
+<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+<% include ("base/action")%>
+</form>
+
+
+<%include("base/footer_setting")%>

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+wifi config
+
+exit 0

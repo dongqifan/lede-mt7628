@@ -1,0 +1,27 @@
+<%include("base/header_setting")%>
+<form action="<%=luci.dispatcher.build_url("api", "common")%>">
+
+
+<div class="header">
+	<div class="title">
+		Wireless Security Settings
+	</div>
+	<div class="description">
+		On this page you can configure the wireless security settings.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		Wireless Seucirty
+	</div>
+	<div class="content">
+		<%include("include/ra0_security")%>
+	</div>
+</div>
+<input type="hidden" name="commit" value="wireless">
+<input type="hidden" name="page" value="wireless_security">
+<input type="hidden" name="command" value="sleep 3;/etc/init.d/network restart">
+<% include ("base/action")%>
+</form>
+<%include("base/footer_setting")%>

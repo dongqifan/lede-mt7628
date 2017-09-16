@@ -1,0 +1,55 @@
+<%include("base/header_setting")%>
+<div class="header">
+	<div class="title">
+		Backup / Restore
+	</div>
+	<div class="description">
+		Click "Generate archive" to download a tar archive of the current configuration files.
+	</div>
+</div>
+
+<form method="post" action="<%=controller%>/api/system/backup" enctype="multipart/form-data">
+<div class="wraper">
+	<div class="title">
+		Backup
+	</div>
+	<div class="content">
+
+		<div id="backup">
+			<table class="table-form">
+				<tr>
+					<th>Download backup:</th>
+					<td>
+						<input type="hidden" name="token" value="<%=token%>" />
+						<input  type="submit" name="backup" value="Generate archive" />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</form>
+<form method="post" action="<%=luci.dispatcher.build_url("api", "system", "restore")%>" enctype="multipart/form-data">
+<div class="wraper">
+	<div class="title">
+		Restore
+	</div>
+	<div class="content">
+		<div id="backup">
+			<table class="table-form">
+				<tr>
+					<th>Restore backup:</th>
+					<td>
+						<input type="hidden" name="token" value="<%=token%>" />
+						<input type="file" name="archive"  />
+						<input type="submit" name="restore" value="Upload archive..." />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</form>
+
+
+<%include("base/footer_setting")%>

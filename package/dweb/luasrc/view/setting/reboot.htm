@@ -1,0 +1,29 @@
+<%include("base/header")%>
+</head>
+<body>
+<script>
+var s = <%=(sec or 60)%>
+function countDown(){
+  if(s == 0){
+    window.location.href="<%=luci.dispatcher.build_url('web', 'status')%>"
+  }else{
+    $("#sec").html(s);
+    s = s - 1;
+    setTimeout("countDown()", 1000);
+  }
+}
+$(document).ready(function(){
+  setTimeout("countDown()", 1000);
+})
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="count">
+      <div class="count_text">
+        The setting has been completed, please wait <span id="sec"></span> seconds
+      </div>
+    </div>
+  </div>
+</div>
+<%include("base/footer_setting")%>

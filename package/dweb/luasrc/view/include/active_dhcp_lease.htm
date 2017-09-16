@@ -1,0 +1,20 @@
+<%
+local LuciToolStatus = require "luci.tools.status"
+local dhcpLease4 = LuciToolStatus.dhcp_leases()
+%>
+<table class="table">
+			<tr>
+				<th>Hostname</th>
+				<th>IPv4-Address</th>
+				<th>MAC-Address</th>
+				<th>Leasetime remaining</th>
+			</tr>
+			<% for i, v in ipairs(dhcpLease4) do %>
+			<tr>
+				<td><%=v.hostname%></td>
+				<td><%=v.ipaddr%></td>
+				<td><%=v.macaddr%></td>
+				<td> <script>document.write(String.format('%t', Number("<%=v.expires%>")));</script></td>
+			</tr>
+			<%end%>
+</table>

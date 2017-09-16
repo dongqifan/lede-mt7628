@@ -1,0 +1,56 @@
+<%
+model = require "luci.handle.util.model"
+local ComFun = require "luci.handle.common.function"
+local lan = model.getConfigByName("network", "lan")
+local lanPrefix = "model,network,lan"
+%>
+<div id="ipaddr">
+		<table class="table-form">
+			<tr>
+				<th>IP Address:</th>
+				<td><input type="text" id="lan_ip" name="<%=lanPrefix%>,ipaddr" value="<%=lan.options.ipaddr%>" data-rule="required;ip4addr"></td>
+			</tr>
+		</table>
+	</div>
+
+<div id="netmask">
+		<table class="table-form">
+			<tr>
+				<th>Subnet Mask:</th>
+				<td><input type="text" name="<%=lanPrefix%>,netmask" value="<%=lan.options.netmask%>" data-rule="required(#lan_ip:filled);ip4addr"></td>
+			</tr>
+		</table>
+</div>
+
+<div id="stp">
+		<table class="table-form">
+			<tr>
+				<th>Spanning Tree Protocol:</th>
+				<td>
+					<input type="radio" name="<%=lanPrefix%>,stp" value = "0" <% if lan.options.stp ~= "1" then %>checked<%end%> >Disabled
+					<input type="radio" name="<%=lanPrefix%>,stp" value = "1" <% if lan.options.stp == "1" then %>checked<%end%> >Enabled
+				</td>
+			</tr>
+		</table>
+</div>
+
+<div id="igmp_snooping">
+		<table class="table-form">
+			<tr>
+				<th>IGMP Snooping:</th>
+				<td>
+					<input type="radio" name="<%=lanPrefix%>,igmp_snooping" value="0" <% if lan.options.igmp_snooping == "0" then %>checked<%end%>>Disabled
+					<input type="radio" name="<%=lanPrefix%>,igmp_snooping" value="1" <% if lan.options.igmp_snooping ~= "0" then %>checked<%end%>>Enabled
+				</td>
+			</tr>
+		</table>
+</div>
+
+<div id="macaddr">
+	<table class="table-form">
+		<th>Override MAC address</th>
+		<td>
+			<input type="text" name="<%=lanPrefix%>,macaddr" value="<%=lan.options.macaddr%>" data-rule="macaddr">
+		</td>
+	</table>
+</div>

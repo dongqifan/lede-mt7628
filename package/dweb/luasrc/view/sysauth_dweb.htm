@@ -1,0 +1,110 @@
+<%#
+Copyright 2008 Steven Barth <steven@midlink.org>
+Copyright 2008-2012 Jo-Philipp Wich <jow@openwrt.org>
+Licensed to the public under the Apache License 2.0.
+-%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Login</title>
+   <style type="text/css">
+       body{
+           background: #0CA3D2;
+       }
+       .login{
+           margin: 0 auto;
+           width: 350px;
+           margin-top: 150px;
+           background: #ffffff;
+           padding: 10px 0;
+       }
+       .title{
+           padding: 10px;
+           border-bottom: 1px solid #CFCFCF;
+           text-align: center;
+       }
+       .content{
+           padding: 20px;
+           text-align: center;
+       }
+       .action{
+           text-align: center;
+       }
+       .action input{
+           padding: 3px;
+           background: #3966AE;
+           color: #ffffff;
+           font-weight: bold;
+           border: 0;
+           cursor: pointer;
+       }
+   </style>
+</head>
+<body>
+   <form method="post" action="<%=pcdata(luci.http.getenv("REQUEST_URI"))%>">
+   <div class="login">
+       <div class="title">
+           Welcome To Login
+       </div>
+       <div class="content">
+           <%- if fuser then %>
+           <div class="error">
+               Invalid username and/or password! Please try again.
+           </div>
+           <% end -%>
+               <table style="width: 300px;">
+                   <tr>
+                       <td>Username:</td>
+                       <td><input  type="text" name="luci_username" value="<%=duser%>" /></td>
+                   </tr>
+                   <tr>
+                       <td>Password:</td>
+                       <td><input id="focus_password"  type="password" name="luci_password" /></td>
+                   </tr>
+               </table>
+       </div>
+       <div class="action">
+       <input type="submit" value="Login"/>
+       <input type="reset" value="Reset"/>
+   </div>
+   </div>
+
+</form>
+
+
+<script type="text/javascript">//<![CDATA[
+   var input = document.getElementsByName('luci_password')[0];
+   if (input)
+       input.focus();
+//]]></script>
+
+<%
+local uci  = require "luci.model.uci".cursor()
+local fs  = require "nixio.fs"
+local https_key = uci:get("uhttpd", "main", "key")
+local https_port = uci:get("uhttpd", "main", "listen_https")
+if type(https_port) == "table" then
+   https_port = https_port[1]
+end
+
+if https_port and fs.access(https_key) then
+   https_port = https_port:match("(%d+)$")
+%>
+
+<script type="text/javascript">//<![CDATA[
+   if (document.location.protocol != 'https:') {
+       var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
+       var img=new Image;
+       img.onload=function(){window.location = url};
+       img.src='https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/cbi/up.gif?' + Math.random();;
+       setTimeout(function(){
+           img.src=''
+       }, 5000);
+   }
+//]]></script>
+
+<% end %>
+
+<%+footer%>

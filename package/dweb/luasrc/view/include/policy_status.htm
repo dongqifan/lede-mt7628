@@ -1,0 +1,37 @@
+<%
+local LuciToolStatus = require "luci.tools.status"
+
+local Model = require "luci.handle.util.model"
+local wifi = Model.getConfigByName("wireless", "default_mt7628")
+local ComFun = require "luci.handle.common.function"
+local macList = {}
+if wifi.options.AccessControlList0 == nil then
+	macList = {}
+else
+	macList = ComFun.Split(wifi.options.AccessControlList0, ";")
+end
+
+%>
+
+
+<table class="table">
+	<tr>
+		<th>Mac Address</th>
+		<th></th>
+	</tr>
+	<% for i, v in ipairs(macList) do %>
+	<tr>
+		<td><%=v%></td>
+		<td>
+			<form action="<%=luci.dispatcher.build_url("api", "util", "macPolicyDelect")%>">
+			<input type="hidden" name="select" value="<%=i%>">
+			<input type="submit" name="macPolicyDelect" value="Delect">
+			</form>
+		</td>
+	</tr>
+	<% end %>
+
+</table>
+<form action="<%=luci.dispatcher.build_url("api", "util", "macPolicyDelectAll")%>'">
+<input type="submit" name="macPolicyDelectAll" value="DelectAll">
+</form>
