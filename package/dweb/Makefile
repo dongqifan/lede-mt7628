@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Web Page
   SUBMENU:=Base
   TITLE:=web page by dongqifanivan@gmail.com
-  DEPENDS:=+luci-base
+  DEPENDS:=+luci-base +uhttpd +uhttpd-mod-ubus
 endef
 
 HTDOCS = /www
@@ -36,6 +36,9 @@ define Package/$(PKG_NAME)/description
   1. install luci(./script/feeds/update; ./script/feeds/install -a)
   2. ./feeds/luci/collections/luci/Makefile
   (LUCI_DEPENDS:= +uhttpd +uhttpd-mod-ubus). Now you dont compire luci-mod-full and the other package you dont want
+endef
+
+define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
