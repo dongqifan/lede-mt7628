@@ -322,6 +322,9 @@ ramips_board_detect() {
 	*"MT7628AN evaluation"*)
 		name="mt7628"
 		;;
+	*"DcomTek MT7628 EPA"*)
+		name="dcomtek-mt7628-epa"
+		;;
 	*"MT7688 evaluation"*)
 		name="mt7688"
 		;;

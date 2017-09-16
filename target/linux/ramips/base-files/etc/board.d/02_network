@@ -85,6 +85,7 @@ ramips_setup_interfaces()
 	miwifi-nano|\
 	mt7621|\
 	mt7628|\
+	dcomtek-mt7628-epa|\
 	mzk-750dhp|\
 	mzk-w300nh2|\
 	nixcore|\

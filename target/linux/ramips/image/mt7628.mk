@@ -2,6 +2,15 @@
 # MT7628 Profiles
 #
 
+define Device/dcomtek-mt7628-epa
+  DTS := DcomTek-EPA
+  BLOCKSIZE := 64k
+  IMAGE_SIZE := $(ralink_default_fw_size_8M)
+  DEVICE_TITLE := Dcomtek MT7628 EPA
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += dcomtek-mt7628-epa
+
 define Device/mt7628
   DTS := MT7628
   BLOCKSIZE := 64k
