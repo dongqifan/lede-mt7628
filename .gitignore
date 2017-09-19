@@ -6,6 +6,7 @@
 /.config
 /.config.old
 /.vscode
+*/.vscode
 /bin
 /build_dir
 /staging_dir
