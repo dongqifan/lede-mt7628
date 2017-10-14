@@ -126,6 +126,7 @@ end
 		<dt  class="active" href="<%=controller%>/web/advanced/firewall/port_forwarding">Firewall</dt>
 		<dd <% if w[7] == "port_forwarding" then %> class="active" <%end%> href="<%=controller%>/web/advanced/firewall/port_forwarding" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">Port Forwarding</dd>
 		<dd <% if w[7] == "dmz" then %> class="active" <%end%> href="<%=controller%>/web/advanced/firewall/dmz" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">DMZ</dd>
+		<dd <% if w[7] == "upnp" then %> class="active" <%end%> href="<%=controller%>/web/advanced/firewall/upnp" ><img src="<%=resource%>/opMode-img/icon_menu_li.jpg">UPNP</dd>
 		<%else%>
 		<dt  href="<%=controller%>/web/advanced/firewall/port_forwarding">Firewall</dt>
 		<%end%>

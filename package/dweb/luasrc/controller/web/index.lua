@@ -68,6 +68,7 @@ function index()
     entry({"web", "advanced", "firewall"}, alias("web", "advanced", "firewall", "port_forwarding"), _(""), 65)
     entry({"web", "advanced", "firewall", "port_forwarding"}, template("setting/port_forwarding"), _("Port Forwarding"), 66)
     entry({"web", "advanced", "firewall", "dmz"}, template("setting/dmz"), _("DMZ"), 67)
+    entry({"web", "advanced", "firewall", "upnp"}, template("setting/upnp"), _("UPNP"), 67)
 
     entry({"web", "maintenace"}, alias("web", "maintenace", "update"), _(""), 68)
     entry({"web", "maintenace", "update"}, alias("web", "maintenace", "update", "firmware"), _(""), 70)

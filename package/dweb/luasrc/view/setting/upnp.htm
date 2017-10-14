@@ -1,0 +1,43 @@
+<%include("base/header_setting")%>
+
+<%
+
+local Model = require "luci.handle.util.model"
+local upnp = Model.getConfigByName('upnpd', "config")
+%>
+
+
+
+<div class="header">
+	<div class="title">
+		UPNP
+	</div>
+	<div class="description">
+		On this page, you can configuration the UPNP function.
+	</div>
+</div>
+
+<div class="wraper">
+	<div class="title">
+		UPNP
+	</div>
+	<div class="content">
+	<form id="dmz" action="<%=luci.dispatcher.build_url("api", "common")%>">
+		<table class="table-form">
+			<tr>
+                <th>UPNP:</th>
+                <td>
+                        <input type="radio" name="model,upnpd,config,enable_upnp" value = "0" <% if upnp.options.enable_upnp ~= "1" then %>checked<%end%> >Disabled
+                        <input type="radio" name="model,upnpd,config,enable_upnp" value = "1" <% if upnp.options.enable_upnp == "1" then %>checked<%end%> >Enabled
+                </td>
+			</tr>
+        </table>
+        <input type="hidden" name="commit" value="upnpd">
+		<input type="hidden" name="page" value="upnp">
+		<input type="hidden" name="command" value="sleep 3;/etc/init.d/miniupnpd restart">
+		<input type="submit" name="upnp" value="Apply">
+	</form>
+	</div>
+</div>
+
+<%include("base/footer_setting")%>

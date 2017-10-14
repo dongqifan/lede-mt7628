@@ -29,36 +29,42 @@ function setOpMode()
     c:set("dhcp", "lan", "ignore", "0")
     c:set("wireless", wifi2gSid, "ApCliEnable", "0")
     c:set("wireless", wifi2gSid, "hidden", "0")
+    ComFun.forkExec("echo 0 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   elseif opmode == "bridge" then
     c:set("network", "lan", "ifname", "eth0.1 eth0.2")
     c:set("network", "wan", "ifname", "")
     c:set("dhcp", "lan", "ignore", "1")
     c:set("wireless", wifi2gSid, "ApCliEnable", "0")
     c:set("wireless", wifi2gSid, "hidden", "0")
+    ComFun.forkExec("echo 0 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   elseif opmode == "repeater" then
     c:set("network", "lan", "ifname", "eth0.1 eth0.2 apcli0")
     c:set("network", "wan", "ifname", "")
     c:set("dhcp", "lan", "ignore", "1")
     c:set("wireless", wifi2gSid, "ApCliEnable", "1")
     c:set("wireless", wifi2gSid, "hidden", "0")
+    ComFun.forkExec("echo 0 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   elseif opmode == "wisp" then
     c:set("network", "lan", "ifname", "eth0.1 eth0.2")
     c:set("network", "wan", "ifname", "apcli0")
     c:set("dhcp", "lan", "ignore", "0")
     c:set("wireless", wifi2gSid, "ApCliEnable", "1")
     c:set("wireless", wifi2gSid, "hidden", "0")
+    ComFun.forkExec("echo 0 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   elseif opmode == "client" then
     c:set("network", "lan", "ifname", "eth0.1 eth0.2 apcli0")
     c:set("network", "wan", "ifname", "")
     c:set("dhcp", "lan", "ignore", "1")
     c:set("wireless", wifi2gSid, "ApCliEnable", "1")
     c:set("wireless", wifi2gSid, "hidden", "1")
+    ComFun.forkExec("echo 1 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   elseif opmode == "client_wisp" then
     c:set("network", "lan", "ifname", "eth0.1 eth0.2")
     c:set("network", "wan", "ifname", "apcli0")
     c:set("dhcp", "lan", "ignore", "0")
     c:set("wireless", wifi2gSid, "ApCliEnable", "1")
     c:set("wireless", wifi2gSid, "hidden", "1")
+    ComFun.forkExec("echo 1 > /sys/class/leds/mt7628\:blue\:wifi/brightness");
   end
   c:commit("wireless")
   c:commit("network")

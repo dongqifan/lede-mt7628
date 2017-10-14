@@ -10,12 +10,20 @@
 		device_type = "memory";
 		reg = <0x0 0x2000000>;
 	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+		wifi {
+			label = "mt7628:blue:wifi";
+			gpio = <&gpio1 12 0>;
+		};
+	};
 };
 
 &pinctrl {
 	state_default: pinctrl0 {
 		gpio {
-			ralink,group = "i2c", "jtag";
+			ralink,group = "i2c", "jtag", "wled_an";
 			ralink,function = "gpio";
 		};
         sw_r {
@@ -28,6 +36,8 @@
         };
 	};
 };
+
+
 
 &wmac {
 	status = "okay";
